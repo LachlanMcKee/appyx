@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bumble.appyx.core.integrationpoint.AndroidIntegrationPoint
 import com.bumble.appyx.core.integrationpoint.activitystarter.ActivityStarter
 import com.bumble.appyx.core.integrationpoint.permissionrequester.PermissionRequester
 import com.bumble.appyx.core.integrationpoint.requestcode.RequestCodeClient
@@ -35,8 +36,8 @@ import java.util.UUID
 class IntegrationPointExampleNode(buildContext: BuildContext) : Node(buildContext = buildContext),
     RequestCodeClient {
 
-    private val permissionRequester: PermissionRequester get() = integrationPoint.permissionRequester
-    private val activityStarter: ActivityStarter get() = integrationPoint.activityStarter
+    private val permissionRequester: PermissionRequester get() = (integrationPoint as AndroidIntegrationPoint).permissionRequester
+    private val activityStarter: ActivityStarter get() = (integrationPoint as AndroidIntegrationPoint).activityStarter
     private var permissionsResultCancellable: Cancellable? = null
     private var activityResultsCancellable: Cancellable? = null
     private var permissionsResultState by mutableStateOf("Press request permissions to check permissions state")

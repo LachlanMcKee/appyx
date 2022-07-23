@@ -3,11 +3,7 @@ package com.bumble.appyx.sandbox.client.container
 import android.content.Intent
 import android.os.Parcelable
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
@@ -20,6 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.bumble.appyx.core.composable.Children
+import com.bumble.appyx.core.integrationpoint.AndroidIntegrationPoint
+import com.bumble.appyx.core.integrationpoint.activitystarter.ActivityStarter
 import com.bumble.appyx.core.modality.BuildContext
 import com.bumble.appyx.core.node.Node
 import com.bumble.appyx.core.node.ParentNode
@@ -33,20 +31,7 @@ import com.bumble.appyx.sandbox.client.backstack.BackStackExampleNode
 import com.bumble.appyx.sandbox.client.blocker.BlockerExampleNode
 import com.bumble.appyx.sandbox.client.combined.CombinedRoutingSourceNode
 import com.bumble.appyx.sandbox.client.container.ContainerNode.Routing
-import com.bumble.appyx.sandbox.client.container.ContainerNode.Routing.BackStackExample
-import com.bumble.appyx.sandbox.client.container.ContainerNode.Routing.BlockerExample
-import com.bumble.appyx.sandbox.client.container.ContainerNode.Routing.CombinedRoutingSource
-import com.bumble.appyx.sandbox.client.container.ContainerNode.Routing.Customisations
-import com.bumble.appyx.sandbox.client.container.ContainerNode.Routing.InteractorExample
-import com.bumble.appyx.sandbox.client.container.ContainerNode.Routing.LazyExamples
-import com.bumble.appyx.sandbox.client.container.ContainerNode.Routing.ModalExample
-import com.bumble.appyx.sandbox.client.container.ContainerNode.Routing.MviCoreExample
-import com.bumble.appyx.sandbox.client.container.ContainerNode.Routing.MviCoreLeafExample
-import com.bumble.appyx.sandbox.client.container.ContainerNode.Routing.Picker
-import com.bumble.appyx.sandbox.client.container.ContainerNode.Routing.RequestPermissionsExamples
-import com.bumble.appyx.sandbox.client.container.ContainerNode.Routing.RoutingSourcesExamples
-import com.bumble.appyx.sandbox.client.container.ContainerNode.Routing.SpotlightExample
-import com.bumble.appyx.sandbox.client.container.ContainerNode.Routing.TilesExample
+import com.bumble.appyx.sandbox.client.container.ContainerNode.Routing.*
 import com.bumble.appyx.sandbox.client.customisations.createViewCustomisationsActivityIntent
 import com.bumble.appyx.sandbox.client.integrationpoint.IntegrationPointExampleNode
 import com.bumble.appyx.sandbox.client.interactorusage.InteractorNodeBuilder
@@ -72,6 +57,8 @@ class ContainerNode(
     routingSource = backStack,
     buildContext = buildContext,
 ) {
+    private val activityStarter: ActivityStarter
+        get() = (integrationPoint as AndroidIntegrationPoint).activityStarter
 
     class Customisation(val name: String? = null) : NodeCustomisation
 
@@ -185,7 +172,7 @@ class ContainerNode(
                 TextButton("MVICore Example") { backStack.push(MviCoreExample) }
                 TextButton("MVICore Leaf Example") { backStack.push(MviCoreLeafExample) }
                 TextButton("Launch interop example") {
-                    integrationPoint.activityStarter.startActivity {
+                    activityStarter.startActivity {
                         Intent(this, InteropExampleActivity::class.java)
                     }
                 }
@@ -245,7 +232,7 @@ class ContainerNode(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 TextButton("Push default node") {
-                    integrationPoint.activityStarter.startActivity {
+                    activityStarter.startActivity {
                         createViewCustomisationsActivityIntent(
                             context = this,
                             hasCustomisedView = false
@@ -253,7 +240,7 @@ class ContainerNode(
                     }
                 }
                 TextButton("Push node with customised view") {
-                    integrationPoint.activityStarter.startActivity {
+                    activityStarter.startActivity {
                         createViewCustomisationsActivityIntent(
                             context = this,
                             hasCustomisedView = true

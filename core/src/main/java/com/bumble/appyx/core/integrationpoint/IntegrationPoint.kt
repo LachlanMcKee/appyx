@@ -1,23 +1,11 @@
 package com.bumble.appyx.core.integrationpoint
 
-import android.os.Bundle
 import androidx.compose.runtime.Stable
-import com.bumble.appyx.core.integrationpoint.activitystarter.ActivityStarter
-import com.bumble.appyx.core.integrationpoint.permissionrequester.PermissionRequester
-import com.bumble.appyx.core.integrationpoint.requestcode.RequestCodeRegistry
 import com.bumble.appyx.core.node.Node
 import com.bumble.appyx.core.routing.upnavigation.UpNavigationHandler
 
 @Stable
-abstract class IntegrationPoint(
-    protected val savedInstanceState: Bundle?
-) : UpNavigationHandler {
-
-    protected val requestCodeRegistry = RequestCodeRegistry(savedInstanceState)
-
-    abstract val activityStarter: ActivityStarter
-
-    abstract val permissionRequester: PermissionRequester
+abstract class IntegrationPoint : UpNavigationHandler {
 
     private var _root: Node? = null
     private val root: Node
@@ -32,10 +20,6 @@ abstract class IntegrationPoint(
 
     fun detach() {
         _root = null
-    }
-
-    fun onSaveInstanceState(outState: Bundle) {
-        requestCodeRegistry.onSaveInstanceState(outState)
     }
 
     abstract fun onRootFinished()

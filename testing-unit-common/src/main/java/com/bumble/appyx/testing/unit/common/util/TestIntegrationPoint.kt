@@ -7,7 +7,7 @@ import com.bumble.appyx.core.routing.upnavigation.UpNavigationHandler
 
 class TestIntegrationPoint(
     private val upNavigationHandler: UpNavigationHandler
-) : IntegrationPoint(savedInstanceState = null), UpNavigationHandler by upNavigationHandler {
+) : com.bumble.appyx.core.integrationpoint.IntegrationPoint(savedInstanceState = null), UpNavigationHandler by upNavigationHandler {
 
     var rootFinished: Boolean = false
 

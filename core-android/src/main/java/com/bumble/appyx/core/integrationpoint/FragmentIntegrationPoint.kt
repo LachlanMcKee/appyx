@@ -2,24 +2,25 @@ package com.bumble.appyx.core.integrationpoint
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.bumble.appyx.core.integrationpoint.activitystarter.ActivityBoundary
 import com.bumble.appyx.core.integrationpoint.activitystarter.ActivityStarter
 import com.bumble.appyx.core.integrationpoint.permissionrequester.PermissionRequestBoundary
 import com.bumble.appyx.core.integrationpoint.permissionrequester.PermissionRequester
 
-open class ActivityIntegrationPoint(
-    private val activity: AppCompatActivity,
-    savedInstanceState: Bundle?,
-) : IntegrationPoint(savedInstanceState = savedInstanceState) {
-    private val activityBoundary = ActivityBoundary(activity, requestCodeRegistry)
-    private val permissionRequestBoundary = PermissionRequestBoundary(activity, requestCodeRegistry)
+open class FragmentIntegrationPoint(
+    private val fragment: Fragment,
+    savedInstanceState: Bundle?
+) : AndroidIntegrationPoint(savedInstanceState = savedInstanceState) {
+    private val activityBoundary = ActivityBoundary(fragment, requestCodeRegistry)
+    private val permissionRequestBoundary = PermissionRequestBoundary(fragment, requestCodeRegistry)
 
     override val activityStarter: ActivityStarter
         get() = activityBoundary
 
     override val permissionRequester: PermissionRequester
         get() = permissionRequestBoundary
+
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         activityBoundary.onActivityResult(requestCode, resultCode, data)
@@ -34,12 +35,14 @@ open class ActivityIntegrationPoint(
     }
 
     override fun handleUpNavigation() {
+        val activity = fragment.requireActivity()
         if (!activity.onNavigateUp()) {
             activity.onBackPressed()
         }
     }
 
     override fun onRootFinished() {
+        val activity = fragment.requireActivity()
         if (!activity.onNavigateUp()) {
             activity.finish()
         }

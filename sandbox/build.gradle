@@ -54,7 +54,7 @@ android {
 }
 
 dependencies {
-    implementation project(':core')
+    implementation project(':core-android')
     implementation project(':interop-rx2')
     implementation project(':interop-ribs')
     implementation project(':routing-source-addons')

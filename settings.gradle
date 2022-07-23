@@ -11,6 +11,7 @@ enableFeaturePreview 'VERSION_CATALOGS'
 
 include ':app',
         ':core',
+        ':core-android',
         ':sandbox',
         ':interop-rx2',
         ':interop-ribs',
