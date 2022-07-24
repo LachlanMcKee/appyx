@@ -1,5 +1,7 @@
 package com.bumble.appyx.routingsource.backstack.operation
 
+import com.bumble.appyx.CommonParcelize
+import com.bumble.appyx.CommonRawValue
 import com.bumble.appyx.core.routing.RoutingKey
 import com.bumble.appyx.routingsource.backstack.BackStack
 import com.bumble.appyx.routingsource.backstack.BackStackElement
@@ -7,17 +9,15 @@ import com.bumble.appyx.routingsource.backstack.BackStackElements
 import com.bumble.appyx.routingsource.backstack.active
 import com.bumble.appyx.routingsource.backstack.BackStack.TransitionState.ACTIVE
 import com.bumble.appyx.routingsource.backstack.BackStack.TransitionState.CREATED
-import kotlinx.parcelize.Parcelize
-import kotlinx.parcelize.RawValue
 
 /**
  * Operation:
  *
  * [A, B, C] + NewRoot(D) = [ D ]
  */
-@Parcelize
+@CommonParcelize
 data class NewRoot<T : Any>(
-    private val element: @RawValue T
+    private val element: @CommonRawValue T
 ) : BackStackOperation<T> {
 
     override fun isApplicable(elements: BackStackElements<T>): Boolean = true

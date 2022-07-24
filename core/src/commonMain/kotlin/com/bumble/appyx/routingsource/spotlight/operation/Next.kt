@@ -1,14 +1,14 @@
 package com.bumble.appyx.routingsource.spotlight.operation
 
+import com.bumble.appyx.CommonParcelize
 import com.bumble.appyx.core.routing.RoutingElements
 import com.bumble.appyx.routingsource.spotlight.Spotlight
 import com.bumble.appyx.routingsource.spotlight.Spotlight.TransitionState
 import com.bumble.appyx.routingsource.spotlight.Spotlight.TransitionState.ACTIVE
 import com.bumble.appyx.routingsource.spotlight.Spotlight.TransitionState.INACTIVE_AFTER
 import com.bumble.appyx.routingsource.spotlight.Spotlight.TransitionState.INACTIVE_BEFORE
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
+@CommonParcelize
 class Next<T : Any> : SpotlightOperation<T> {
 
     override fun isApplicable(elements: RoutingElements<T, TransitionState>) =

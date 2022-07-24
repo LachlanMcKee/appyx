@@ -1,10 +1,12 @@
 package com.bumble.appyx.core.routing.source.permanent.operation
 
+import com.bumble.appyx.CommonParcelize
 import com.bumble.appyx.core.routing.RoutingElement
 import com.bumble.appyx.core.routing.RoutingElements
 import com.bumble.appyx.core.routing.RoutingKey
 import com.bumble.appyx.core.routing.source.permanent.PermanentRoutingSource
 
+@CommonParcelize
 data class Add<T : Any>(
     private val key: RoutingKey<T>
 ) : PermanentOperation<T> {

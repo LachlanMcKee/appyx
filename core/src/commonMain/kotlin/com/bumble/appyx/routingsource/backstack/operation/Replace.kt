@@ -1,5 +1,7 @@
 package com.bumble.appyx.routingsource.backstack.operation
 
+import com.bumble.appyx.CommonParcelize
+import com.bumble.appyx.CommonRawValue
 import com.bumble.appyx.core.routing.RoutingKey
 import com.bumble.appyx.routingsource.backstack.BackStack
 import com.bumble.appyx.routingsource.backstack.BackStackElement
@@ -8,17 +10,15 @@ import com.bumble.appyx.routingsource.backstack.activeIndex
 import com.bumble.appyx.routingsource.backstack.activeRouting
 import com.bumble.appyx.routingsource.backstack.BackStack.TransitionState.ACTIVE
 import com.bumble.appyx.routingsource.backstack.BackStack.TransitionState.CREATED
-import kotlinx.parcelize.Parcelize
-import kotlinx.parcelize.RawValue
 
 /**
  * Operation:
  *
  * [A, B, C] + Replace(D) = [A, B, D]
  */
-@Parcelize
+@CommonParcelize
 data class Replace<T : Any>(
-    private val element: @RawValue T
+    private val element: @CommonRawValue T
 ) : BackStackOperation<T> {
 
     override fun isApplicable(elements: BackStackElements<T>): Boolean =

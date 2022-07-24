@@ -1,16 +1,16 @@
 package com.bumble.appyx.routingsource.backstack.operation
 
+import com.bumble.appyx.CommonParcelize
 import com.bumble.appyx.routingsource.backstack.BackStack
 import com.bumble.appyx.routingsource.backstack.BackStackElements
 import com.bumble.appyx.routingsource.backstack.activeIndex
-import kotlinx.parcelize.Parcelize
 
 /**
  * Operation:
  *
  * [A, B, C] + Pop = [A, B]
  */
-@Parcelize
+@CommonParcelize
 class Pop<T : Any> : BackStackOperation<T> {
 
     override fun isApplicable(elements: BackStackElements<T>): Boolean =

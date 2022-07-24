@@ -1,5 +1,7 @@
 package com.bumble.appyx.routingsource.spotlight.operation
 
+import com.bumble.appyx.CommonParcelize
+import com.bumble.appyx.CommonRawValue
 import com.bumble.appyx.core.routing.Operation.Noop
 import com.bumble.appyx.core.routing.RoutingElements
 import com.bumble.appyx.core.routing.RoutingKey
@@ -10,12 +12,10 @@ import com.bumble.appyx.routingsource.spotlight.Spotlight.TransitionState.INACTI
 import com.bumble.appyx.routingsource.spotlight.Spotlight.TransitionState.INACTIVE_BEFORE
 import com.bumble.appyx.routingsource.spotlight.SpotlightElement
 import com.bumble.appyx.routingsource.spotlight.SpotlightElements
-import kotlinx.parcelize.Parcelize
-import kotlinx.parcelize.RawValue
 
-@Parcelize
+@CommonParcelize
 class UpdateElements<T : Any>(
-    private val elements: @RawValue List<T>,
+    private val elements: @CommonRawValue List<T>,
     private val initialActiveIndex: Int? = null,
 ) : SpotlightOperation<T> {
 

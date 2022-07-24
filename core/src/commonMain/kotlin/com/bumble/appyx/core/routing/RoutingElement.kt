@@ -1,24 +1,24 @@
 package com.bumble.appyx.core.routing
 
-import android.os.Parcelable
+import com.bumble.appyx.CommonParcelize
+import com.bumble.appyx.CommonRawValue
+import com.bumble.appyx.CommonParcelable
 import androidx.compose.runtime.Immutable
-import kotlinx.parcelize.Parcelize
-import kotlinx.parcelize.RawValue
 
-@Parcelize
+@CommonParcelize
 @Immutable
 class RoutingElement<Routing, State> private constructor(
-    val key: @RawValue RoutingKey<Routing>,
-    val fromState: @RawValue State,
-    val targetState: @RawValue State,
-    val operation: @RawValue Operation<Routing, State>,
+    val key: @CommonRawValue RoutingKey<Routing>,
+    val fromState: @CommonRawValue State,
+    val targetState: @CommonRawValue State,
+    val operation: @CommonRawValue Operation<Routing, State>,
     val transitionHistory: List<Pair<State, State>>
-) : Parcelable {
+) : CommonParcelable {
     constructor(
-        key: @RawValue RoutingKey<Routing>,
-        fromState: @RawValue State,
-        targetState: @RawValue State,
-        operation: @RawValue Operation<Routing, State>,
+        key: @CommonRawValue RoutingKey<Routing>,
+        fromState: @CommonRawValue State,
+        targetState: @CommonRawValue State,
+        operation: @CommonRawValue Operation<Routing, State>,
     ) : this(
         key,
         fromState,
@@ -28,8 +28,8 @@ class RoutingElement<Routing, State> private constructor(
     )
 
     fun transitionTo(
-        newTargetState: @RawValue State,
-        operation: @RawValue Operation<Routing, State>
+        newTargetState: @CommonRawValue State,
+        operation: @CommonRawValue Operation<Routing, State>
     ): RoutingElement<Routing, State> =
         RoutingElement(
             key = key,

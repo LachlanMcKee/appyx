@@ -1,19 +1,19 @@
 package com.bumble.appyx.core.routing
 
-import android.os.Parcelable
+import com.bumble.appyx.CommonParcelize
+import com.bumble.appyx.CommonRawValue
+import com.bumble.appyx.CommonParcelable
 import androidx.compose.runtime.Immutable
-import kotlinx.parcelize.Parcelize
-import kotlinx.parcelize.RawValue
 import java.util.UUID
 
-@Parcelize
+@CommonParcelize
 @Immutable
 class RoutingKey<Routing> private constructor(
-    val routing: @RawValue Routing,
+    val routing: @CommonRawValue Routing,
     val id: String
-) : Parcelable {
+) : CommonParcelable {
 
-    constructor(routing: @RawValue Routing) : this(
+    constructor(routing: @CommonRawValue Routing) : this(
         routing = routing,
         id = UUID.randomUUID().toString()
     )

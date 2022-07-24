@@ -1,12 +1,12 @@
 package com.bumble.appyx.routingsource.spotlight.operation
 
+import com.bumble.appyx.CommonParcelize
 import com.bumble.appyx.core.routing.RoutingElements
 import com.bumble.appyx.routingsource.spotlight.Spotlight
 import com.bumble.appyx.routingsource.spotlight.Spotlight.TransitionState
 import com.bumble.appyx.routingsource.spotlight.currentIndex
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
+@CommonParcelize
 class Activate<T : Any>(
     private val index: Int
 ) : SpotlightOperation<T> {

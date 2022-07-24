@@ -1,5 +1,7 @@
 package com.bumble.appyx.routingsource.backstack.operation
 
+import com.bumble.appyx.CommonParcelize
+import com.bumble.appyx.CommonRawValue
 import com.bumble.appyx.core.routing.RoutingKey
 import com.bumble.appyx.routingsource.backstack.BackStack
 import com.bumble.appyx.routingsource.backstack.BackStackElement
@@ -8,8 +10,6 @@ import com.bumble.appyx.routingsource.backstack.active
 import com.bumble.appyx.routingsource.backstack.activeRouting
 import com.bumble.appyx.routingsource.backstack.BackStack.TransitionState.ACTIVE
 import com.bumble.appyx.routingsource.backstack.BackStack.TransitionState.CREATED
-import kotlinx.parcelize.Parcelize
-import kotlinx.parcelize.RawValue
 
 /**
  * Operation:
@@ -20,9 +20,9 @@ import kotlinx.parcelize.RawValue
  */
 sealed class SingleTop<T : Any> : BackStackOperation<T> {
 
-    @Parcelize
+    @CommonParcelize
     class SingleTopReactivateBackStackOperation<T : Any>(
-        private val element: @RawValue T,
+        private val element: @CommonRawValue T,
         private val position: Int
     ) : SingleTop<T>() {
 
@@ -57,9 +57,9 @@ sealed class SingleTop<T : Any> : BackStackOperation<T> {
         override fun hashCode(): Int = this.javaClass.hashCode()
     }
 
-    @Parcelize
+    @CommonParcelize
     class SingleTopReplaceBackStackOperation<T : Any>(
-        private val element: @RawValue T,
+        private val element: @CommonRawValue T,
         private val position: Int,
     ) : SingleTop<T>() {
 

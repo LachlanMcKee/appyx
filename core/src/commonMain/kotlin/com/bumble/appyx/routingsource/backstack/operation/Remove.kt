@@ -1,17 +1,17 @@
 package com.bumble.appyx.routingsource.backstack.operation
 
+import com.bumble.appyx.CommonParcelize
 import com.bumble.appyx.core.routing.RoutingKey
 import com.bumble.appyx.routingsource.backstack.BackStack
 import com.bumble.appyx.routingsource.backstack.BackStackElements
 import com.bumble.appyx.routingsource.backstack.activeIndex
-import kotlinx.parcelize.Parcelize
 
 /**
  * Operation:
  *
  * [A, B, C] + Remove(id of B) = [A, C]
  */
-@Parcelize
+@CommonParcelize
 data class Remove<T : Any>(
     private val key: RoutingKey<T>
 ) : BackStackOperation<T> {
