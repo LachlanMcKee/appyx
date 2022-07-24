@@ -1,8 +1,8 @@
 package com.bumble.appyx.core.node
 
-import androidx.activity.compose.BackHandler
-import androidx.annotation.CallSuper
-import androidx.annotation.VisibleForTesting
+//import androidx.activity.compose.BackHandler
+//import androidx.annotation.CallSuper
+//import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -75,7 +75,7 @@ abstract class ParentNode<Routing : Any>(
 
     private var transitionsInBackgroundJob: Job? = null
 
-    @CallSuper
+//    @CallSuper
     override fun onBuilt() {
         super.onBuilt()
         delayedChildRestoration.restoreChildren()?.also { restoredMap ->
@@ -214,16 +214,16 @@ abstract class ParentNode<Routing : Any>(
     @Composable
     final override fun DerivedSetup() {
         val canHandleBackPress by routingSource.canHandleBackPress.collectAsState()
-        BackHandler(canHandleBackPress) {
-            routingSource.onBackPressed()
-        }
+//        BackHandler(canHandleBackPress) {
+//            routingSource.onBackPressed()
+//        }
     }
 
     open fun onChildFinished(child: Node) {
         // TODO warn unhandled child
     }
 
-    @CallSuper
+//    @CallSuper
     override fun onSaveInstanceState(state: MutableSavedStateMap) {
         super.onSaveInstanceState(state)
         // permanentRoutingSource is not provided as a plugin, store manually
@@ -277,7 +277,7 @@ abstract class ParentNode<Routing : Any>(
     // endregion
 
     // TODO Investigate how to remove it
-    @VisibleForTesting
+//    @VisibleForTesting
     internal fun manageTransitionsInTest() {
         manageTransitionsInBackground()
     }

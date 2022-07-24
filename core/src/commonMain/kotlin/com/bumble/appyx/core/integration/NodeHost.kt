@@ -11,12 +11,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import com.bumble.appyx.utils.customisations.NodeCustomisationDirectory
 import com.bumble.appyx.utils.customisations.NodeCustomisationDirectoryImpl
 import com.bumble.appyx.core.integrationpoint.IntegrationPoint
-import com.bumble.appyx.core.lifecycle.LifecycleExpects
 import com.bumble.appyx.core.lifecycle.PlatformLifecycle
 import com.bumble.appyx.core.lifecycle.PlatformLifecycleEventObserver
 import com.bumble.appyx.core.modality.BuildContext
 import com.bumble.appyx.core.node.Node
 import com.bumble.appyx.core.node.build
+import com.bumble.appyx.currentLifecycle
 
 @Stable
 fun interface NodeFactory<N : Node> {
@@ -43,7 +43,7 @@ fun <N : Node> NodeHost(
         onDispose { node.updateLifecycleState(PlatformLifecycle.State.DESTROYED) }
     }
     node.Compose()
-    val lifecycle = LifecycleExpects.currentLifecycle()
+    val lifecycle = currentLifecycle()
     DisposableEffect(lifecycle) {
         node.updateLifecycleState(lifecycle.currentState)
         val observer = PlatformLifecycleEventObserver { source, _ ->

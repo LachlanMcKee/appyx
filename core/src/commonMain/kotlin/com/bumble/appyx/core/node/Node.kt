@@ -1,22 +1,23 @@
 package com.bumble.appyx.core.node
 
-import androidx.annotation.CallSuper
+//import androidx.annotation.CallSuper
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import com.bumble.appyx.core.BuildConfig
+import com.bumble.appyx.createLifecycleOwnerProvider
+//import androidx.compose.ui.platform.LocalLifecycleOwner
+//import com.bumble.appyx.core.BuildConfig
 import com.bumble.appyx.core.integrationpoint.IntegrationPoint
 import com.bumble.appyx.core.integrationpoint.IntegrationPointStub
 import com.bumble.appyx.core.lifecycle.*
-import com.bumble.appyx.core.lifecycle.android.toAndroidLifecycleOwner
 import com.bumble.appyx.core.modality.AncestryInfo
 import com.bumble.appyx.core.modality.BuildContext
 import com.bumble.appyx.core.plugin.*
 import com.bumble.appyx.core.state.MutableSavedStateMap
 import com.bumble.appyx.core.state.MutableSavedStateMapImpl
 import com.bumble.appyx.core.state.SavedStateMap
+import com.bumble.appyx.createPlatformLifecycleRegistry
 import com.bumble.appyx.debug.Appyx
 
 abstract class Node(
@@ -59,9 +60,9 @@ abstract class Node(
     private var wasBuilt = false
 
     init {
-        if (BuildConfig.DEBUG) {
-            lifecycle.addObserver(LifecycleLogger)
-        }
+//        if (BuildConfig.DEBUG) {
+//            lifecycle.addObserver(LifecycleLogger)
+//        }
         lifecycle.addObserver(object : PlatformLifecycleObserver {
             override fun onCreate(owner: PlatformLifecycleOwner) {
                 if (!wasBuilt) error("onBuilt was not invoked for $this")
@@ -69,7 +70,7 @@ abstract class Node(
         });
     }
 
-    @CallSuper
+    //    @CallSuper
     open fun onBuilt() {
         require(!wasBuilt) { "onBuilt was already invoked" }
         wasBuilt = true
@@ -80,12 +81,22 @@ abstract class Node(
 
     @Composable
     fun Compose(modifier: Modifier = Modifier) {
-        CompositionLocalProvider(
-            LocalNode provides this,
-            LocalLifecycleOwner provides this.toAndroidLifecycleOwner(),
-        ) {
-            DerivedSetup()
-            View(modifier)
+        val lifecycleOwnerProvider = createLifecycleOwnerProvider(this)
+        if (lifecycleOwnerProvider != null) {
+            CompositionLocalProvider(
+                LocalNode provides this,
+                lifecycleOwnerProvider,
+            ) {
+                DerivedSetup()
+                View(modifier)
+            }
+        } else {
+            CompositionLocalProvider(
+                LocalNode provides this
+            ) {
+                DerivedSetup()
+                View(modifier)
+            }
         }
     }
 
@@ -120,7 +131,7 @@ abstract class Node(
         return writer.savedState
     }
 
-    @CallSuper
+    //    @CallSuper
     protected open fun onSaveInstanceState(state: MutableSavedStateMap) {
         // no-op
     }
@@ -148,7 +159,7 @@ abstract class Node(
         }
     }
 
-    @CallSuper
+    //    @CallSuper
     protected open fun performUpNavigation(): Boolean =
         handleUpNavigationByPlugins() || parent?.performUpNavigation() == true
 

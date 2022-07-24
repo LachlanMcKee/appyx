@@ -9,11 +9,11 @@ plugins {
 
 kotlin {
     android()
-//    jvm("desktop") {
-//        compilations.all {
-//            kotlinOptions.jvmTarget = "11"
-//        }
-//    }
+    jvm("desktop") {
+        compilations.all {
+            kotlinOptions.jvmTarget = "11"
+        }
+    }
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -53,11 +53,12 @@ kotlin {
 ////                implementation("junit:junit:4.13.2")
 ////            }
 //        }
-//        val desktopMain by getting {
-//            dependencies {
-//                api(compose.preview)
-//            }
-//        }
+        val desktopMain by getting {
+            dependencies {
+                api(compose.preview)
+                api(libs.kotlin.coroutines.core)
+            }
+        }
 //        val desktopTest by getting
     }
 }

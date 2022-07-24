@@ -33,6 +33,7 @@ compose-ui-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 google-accompanist-flow = "com.google.accompanist:accompanist-flowlayout:0.20.0"
 google-material = "com.google.android.material:material:1.4.0"
 junit = "junit:junit:4.13.2"
+kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlin-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 kotlin-coroutines-test-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test-jvm", version.ref = "coroutines" }

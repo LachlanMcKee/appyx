@@ -1,5 +1,6 @@
 package com.bumble.appyx.core.lifecycle.android
 
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.*
 import com.bumble.appyx.core.lifecycle.PlatformLifecycle
 import com.bumble.appyx.core.lifecycle.PlatformLifecycleEventObserver
@@ -18,8 +19,9 @@ internal class AndroidPlatformLifecycle(val androidLifecycle: Lifecycle) : Platf
     override val currentState: PlatformLifecycle.State
         get() = androidLifecycle.currentState.toPlatformState()
 
-    override val coroutineScope: CoroutineScope
-        get() = androidLifecycle.coroutineScope
+    @Composable
+    override fun coroutineScope(): CoroutineScope =
+        androidLifecycle.coroutineScope
 
     override fun asFlow(): Flow<PlatformLifecycle.State> =
         callbackFlow {

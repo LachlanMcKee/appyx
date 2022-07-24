@@ -1,5 +1,7 @@
 package com.bumble.appyx.core.lifecycle
 
+import com.bumble.appyx.createPlatformLifecycleRegistry
+
 /**
  * Combines multiple lifecycles and provides a minimum of their states.
  *
