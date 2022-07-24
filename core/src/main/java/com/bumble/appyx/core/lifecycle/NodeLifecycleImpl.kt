@@ -1,18 +1,14 @@
 package com.bumble.appyx.core.lifecycle
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
+internal class NodeLifecycleImpl(owner: PlatformLifecycleOwner) : NodeLifecycle {
 
-internal class NodeLifecycleImpl(owner: LifecycleOwner) : NodeLifecycle {
+    private val lifecycleRegistry = createPlatformLifecycleRegistry(owner)
 
-    private val lifecycleRegistry = LifecycleRegistry(owner)
+    override val lifecycle: PlatformLifecycle
+        get() = lifecycleRegistry
 
-    override fun getLifecycle(): Lifecycle =
-        lifecycleRegistry
-
-    override fun updateLifecycleState(state: Lifecycle.State) {
-        lifecycleRegistry.currentState = state
+    override fun updateLifecycleState(state: PlatformLifecycle.State) {
+        lifecycleRegistry.setCurrentState(state)
     }
 
 }

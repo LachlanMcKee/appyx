@@ -1,7 +1,6 @@
 package com.bumble.appyx.connectable.rx2
 
-import androidx.lifecycle.Lifecycle
-import com.bumble.appyx.core.lifecycle.subscribe
+import com.bumble.appyx.core.lifecycle.PlatformLifecycle
 import com.jakewharton.rxrelay2.PublishRelay
 import com.jakewharton.rxrelay2.Relay
 import io.reactivex.Observer
@@ -30,7 +29,7 @@ class NodeConnector<Input, Output>(
 
     }
 
-    override fun onCreate(lifecycle: Lifecycle) {
+    override fun onCreate(lifecycle: PlatformLifecycle) {
         lifecycle.subscribe(onCreate = { flushOutputCache() })
     }
 

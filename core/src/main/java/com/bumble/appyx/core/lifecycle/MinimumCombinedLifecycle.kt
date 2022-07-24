@@ -1,10 +1,5 @@
 package com.bumble.appyx.core.lifecycle
 
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
-
 /**
  * Combines multiple lifecycles and provides a minimum of their states.
  *
@@ -14,10 +9,10 @@ import androidx.lifecycle.LifecycleRegistry
  * - INITIALIZED + DESTROYED -> DESTROYED
  */
 internal class MinimumCombinedLifecycle(
-    vararg lifecycles: Lifecycle,
-) : LifecycleOwner {
-    private val registry = LifecycleRegistry(this)
-    private val lifecycles = ArrayList<Lifecycle>()
+    vararg lifecycles: PlatformLifecycle,
+) : PlatformLifecycleOwner {
+    private val registry = createPlatformLifecycleRegistry(this)
+    private val lifecycles = ArrayList<PlatformLifecycle>()
 
     init {
         /*
@@ -28,33 +23,33 @@ internal class MinimumCombinedLifecycle(
         lifecycles.sortedBy { it.currentState }.forEach { manage(it) }
     }
 
-    override fun getLifecycle(): Lifecycle =
-        registry
+    override val lifecycle: PlatformLifecycle
+        get() = registry
 
-    fun manage(lifecycle: Lifecycle) {
+    fun manage(lifecycle: PlatformLifecycle) {
         lifecycles += lifecycle
-        lifecycle.addObserver(object : DefaultLifecycleObserver {
-            override fun onCreate(owner: LifecycleOwner) {
+        lifecycle.addObserver(object : PlatformLifecycleObserver {
+            override fun onCreate(owner: PlatformLifecycleOwner) {
                 update()
             }
 
-            override fun onStart(owner: LifecycleOwner) {
+            override fun onStart(owner: PlatformLifecycleOwner) {
                 update()
             }
 
-            override fun onResume(owner: LifecycleOwner) {
+            override fun onResume(owner: PlatformLifecycleOwner) {
                 update()
             }
 
-            override fun onPause(owner: LifecycleOwner) {
+            override fun onPause(owner: PlatformLifecycleOwner) {
                 update()
             }
 
-            override fun onStop(owner: LifecycleOwner) {
+            override fun onStop(owner: PlatformLifecycleOwner) {
                 update()
             }
 
-            override fun onDestroy(owner: LifecycleOwner) {
+            override fun onDestroy(owner: PlatformLifecycleOwner) {
                 update()
             }
         })
@@ -64,8 +59,8 @@ internal class MinimumCombinedLifecycle(
     private fun update() {
         lifecycles
             .minByOrNull { it.currentState }
-            ?.takeIf { it.currentState != Lifecycle.State.INITIALIZED }
-            ?.also { registry.currentState = it.currentState }
+            ?.takeIf { it.currentState != PlatformLifecycle.State.INITIALIZED }
+            ?.also { registry.setCurrentState(it.currentState) }
     }
 
 }

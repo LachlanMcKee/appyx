@@ -1,6 +1,6 @@
 package com.bumble.appyx.core.plugin
 
-import androidx.lifecycle.Lifecycle
+import com.bumble.appyx.core.lifecycle.PlatformLifecycle
 import com.bumble.appyx.core.node.Node
 import com.bumble.appyx.core.state.MutableSavedStateMap
 
@@ -17,7 +17,7 @@ interface NodeAware<N : Node> : Plugin {
 }
 
 interface NodeLifecycleAware : Plugin {
-    fun onCreate(lifecycle: Lifecycle) {}
+    fun onCreate(lifecycle: PlatformLifecycle) {}
 }
 
 interface UpNavigationHandler : Plugin {

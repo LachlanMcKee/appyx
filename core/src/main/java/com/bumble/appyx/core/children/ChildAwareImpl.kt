@@ -1,10 +1,8 @@
 package com.bumble.appyx.core.children
 
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.coroutineScope
-import com.bumble.appyx.core.lifecycle.isDestroyed
+import com.bumble.appyx.core.lifecycle.PlatformLifecycle
+import com.bumble.appyx.core.lifecycle.PlatformLifecycleObserver
+import com.bumble.appyx.core.lifecycle.PlatformLifecycleOwner
 import com.bumble.appyx.core.node.Node
 import com.bumble.appyx.core.node.ParentNode
 import com.bumble.appyx.core.routing.RoutingKey
@@ -12,16 +10,15 @@ import com.bumble.appyx.core.withPrevious
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
-class ChildAwareImpl<N: Node> : ChildAware<N> {
+class ChildAwareImpl<N : Node> : ChildAware<N> {
 
     private val callbacks: MutableList<ChildAwareCallbackInfo> = ArrayList()
 
     private lateinit var children: StateFlow<Map<out RoutingKey<*>, ChildEntry<*>>>
-    private lateinit var lifecycle: Lifecycle
+    private lateinit var lifecycle: PlatformLifecycle
     private lateinit var coroutineScope: CoroutineScope
 
     override lateinit var node: N
@@ -123,9 +120,9 @@ class ChildAwareImpl<N: Node> : ChildAware<N> {
         }
     }
 
-    private fun Lifecycle.removeWhenDestroyed(info: ChildAwareCallbackInfo) {
-        addObserver(object : DefaultLifecycleObserver {
-            override fun onDestroy(owner: LifecycleOwner) {
+    private fun PlatformLifecycle.removeWhenDestroyed(info: ChildAwareCallbackInfo) {
+        addObserver(object : PlatformLifecycleObserver {
+            override fun onDestroy(owner: PlatformLifecycleOwner) {
                 callbacks.remove(info)
             }
         })

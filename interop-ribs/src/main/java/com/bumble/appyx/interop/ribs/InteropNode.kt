@@ -5,9 +5,10 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.LifecycleEventObserver
 import com.badoo.ribs.core.Rib
 import com.badoo.ribs.core.modality.BuildParams
+import com.bumble.appyx.core.lifecycle.android.toPlatformState
+import com.bumble.appyx.core.node.Node
 import com.bumble.appyx.interop.ribs.InteropView.Dependency
 import com.bumble.appyx.interop.ribs.InteropView.Factory
-import com.bumble.appyx.core.node.Node
 
 interface InteropNode<N : Node> : Rib {
     val appyxNode: N
@@ -24,12 +25,12 @@ internal class InteropNodeImpl<N : Node>(
 ), InteropNode<N> {
 
     private val observer = LifecycleEventObserver { source, _ ->
-        appyxNode.updateLifecycleState(source.lifecycle.currentState)
+        appyxNode.updateLifecycleState(source.lifecycle.currentState.toPlatformState())
     }
 
     override fun onCreate() {
         super.onCreate()
-        appyxNode.updateLifecycleState(lifecycle.currentState)
+        appyxNode.updateLifecycleState(lifecycle.currentState.toPlatformState())
         lifecycle.addObserver(observer)
     }
 

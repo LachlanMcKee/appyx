@@ -1,7 +1,7 @@
 package com.bumble.appyx.core.children
 
-import androidx.lifecycle.Lifecycle
+import com.bumble.appyx.core.lifecycle.PlatformLifecycle
 
-typealias ChildrenCallback<T1, T2> = (commonLifecycle: Lifecycle, child1: T1, child2: T2) -> Unit
+typealias ChildrenCallback<T1, T2> = (commonLifecycle: PlatformLifecycle, child1: T1, child2: T2) -> Unit
 
-typealias ChildCallback<T> = (commonLifecycle: Lifecycle, child: T) -> Unit
+typealias ChildCallback<T> = (commonLifecycle: PlatformLifecycle, child: T) -> Unit

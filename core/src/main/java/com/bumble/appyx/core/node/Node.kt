@@ -6,25 +6,14 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
 import com.bumble.appyx.core.BuildConfig
 import com.bumble.appyx.core.integrationpoint.IntegrationPoint
 import com.bumble.appyx.core.integrationpoint.IntegrationPointStub
-import com.bumble.appyx.core.lifecycle.LifecycleLogger
-import com.bumble.appyx.core.lifecycle.NodeLifecycle
-import com.bumble.appyx.core.lifecycle.NodeLifecycleImpl
+import com.bumble.appyx.core.lifecycle.*
+import com.bumble.appyx.core.lifecycle.android.toAndroidLifecycleOwner
 import com.bumble.appyx.core.modality.AncestryInfo
 import com.bumble.appyx.core.modality.BuildContext
-import com.bumble.appyx.core.plugin.Destroyable
-import com.bumble.appyx.core.plugin.NodeAware
-import com.bumble.appyx.core.plugin.NodeLifecycleAware
-import com.bumble.appyx.core.plugin.Plugin
-import com.bumble.appyx.core.plugin.SavesInstanceState
-import com.bumble.appyx.core.plugin.UpNavigationHandler
-import com.bumble.appyx.core.plugin.plugins
+import com.bumble.appyx.core.plugin.*
 import com.bumble.appyx.core.state.MutableSavedStateMap
 import com.bumble.appyx.core.state.MutableSavedStateMapImpl
 import com.bumble.appyx.core.state.SavedStateMap
@@ -65,7 +54,7 @@ abstract class Node(
             field = value
         }
 
-    private val lifecycleRegistry = LifecycleRegistry(this)
+    private val lifecycleRegistry = createPlatformLifecycleRegistry(this)
 
     private var wasBuilt = false
 
@@ -73,8 +62,8 @@ abstract class Node(
         if (BuildConfig.DEBUG) {
             lifecycle.addObserver(LifecycleLogger)
         }
-        lifecycle.addObserver(object : DefaultLifecycleObserver {
-            override fun onCreate(owner: LifecycleOwner) {
+        lifecycle.addObserver(object : PlatformLifecycleObserver {
+            override fun onCreate(owner: PlatformLifecycleOwner) {
                 if (!wasBuilt) error("onBuilt was not invoked for $this")
             }
         });
@@ -84,7 +73,7 @@ abstract class Node(
     open fun onBuilt() {
         require(!wasBuilt) { "onBuilt was already invoked" }
         wasBuilt = true
-        updateLifecycleState(Lifecycle.State.CREATED)
+        updateLifecycleState(PlatformLifecycle.State.CREATED)
         plugins<NodeAware<Node>>().forEach { it.init(this) }
         plugins<NodeLifecycleAware>().forEach { it.onCreate(lifecycle) }
     }
@@ -93,7 +82,7 @@ abstract class Node(
     fun Compose(modifier: Modifier = Modifier) {
         CompositionLocalProvider(
             LocalNode provides this,
-            LocalLifecycleOwner provides this,
+            LocalLifecycleOwner provides this.toAndroidLifecycleOwner(),
         ) {
             DerivedSetup()
             View(modifier)
@@ -105,19 +94,19 @@ abstract class Node(
     protected open fun DerivedSetup() {
     }
 
-    override fun getLifecycle(): Lifecycle =
-        nodeLifecycle.lifecycle
+    override val lifecycle: PlatformLifecycle
+        get() = nodeLifecycle.lifecycle
 
-    override fun updateLifecycleState(state: Lifecycle.State) {
+    override fun updateLifecycleState(state: PlatformLifecycle.State) {
         if (lifecycle.currentState == state) return
-        if (lifecycle.currentState == Lifecycle.State.DESTROYED && state != Lifecycle.State.DESTROYED) {
+        if (lifecycle.currentState == PlatformLifecycle.State.DESTROYED && state != PlatformLifecycle.State.DESTROYED) {
             Appyx.reportException(
                 IllegalStateException("Trying to change lifecycle state of already destroyed node ${this::class.qualifiedName}")
             )
             return
         }
         nodeLifecycle.updateLifecycleState(state)
-        if (state == Lifecycle.State.DESTROYED) {
+        if (state == PlatformLifecycle.State.DESTROYED) {
             plugins<Destroyable>().forEach { it.destroy() }
         }
     }

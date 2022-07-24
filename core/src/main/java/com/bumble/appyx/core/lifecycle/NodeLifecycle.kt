@@ -1,10 +1,7 @@
 package com.bumble.appyx.core.lifecycle
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
+interface NodeLifecycle: PlatformLifecycleOwner {
 
-interface NodeLifecycle : LifecycleOwner {
-
-    fun updateLifecycleState(state: Lifecycle.State)
+    fun updateLifecycleState(state: PlatformLifecycle.State)
 
 }

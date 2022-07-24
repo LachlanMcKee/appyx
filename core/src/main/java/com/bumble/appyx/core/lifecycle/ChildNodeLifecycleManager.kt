@@ -1,8 +1,5 @@
 package com.bumble.appyx.core.lifecycle
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.coroutineScope
 import com.bumble.appyx.core.children.ChildEntry
 import com.bumble.appyx.core.children.ChildEntryMap
 import com.bumble.appyx.core.children.nodeOrNull
@@ -24,7 +21,7 @@ import kotlinx.coroutines.launch
  * and updates lifecycle of children nodes when updated.
  */
 internal class ChildNodeLifecycleManager<Routing>(
-    private val lifecycle: Lifecycle,
+    private val lifecycle: PlatformLifecycle,
     private val routingSource: RoutingSource<Routing, *>,
     private val children: StateFlow<ChildEntryMap<Routing>>,
     private val coroutineScope: CoroutineScope = lifecycle.coroutineScope,
@@ -47,16 +44,16 @@ internal class ChildNodeLifecycleManager<Routing>(
                     children
                         .value
                         .values
-                        .forEach { entry -> entry.setState(Lifecycle.State.DESTROYED) }
+                        .forEach { entry -> entry.setState(PlatformLifecycle.State.DESTROYED) }
                 }
                 .collect { (parentLifecycleState, screenState, children) ->
                     screenState.onScreen.forEach { key ->
-                        val childState = minOf(parentLifecycleState, Lifecycle.State.RESUMED)
+                        val childState = minOf(parentLifecycleState, PlatformLifecycle.State.RESUMED)
                         children.current[key]?.setState(childState)
                     }
 
                     screenState.offScreen.forEach { key ->
-                        val childState = minOf(parentLifecycleState, Lifecycle.State.CREATED)
+                        val childState = minOf(parentLifecycleState, PlatformLifecycle.State.CREATED)
                         children.current[key]?.setState(childState)
                     }
 
@@ -64,7 +61,7 @@ internal class ChildNodeLifecycleManager<Routing>(
                         val removedKeys = children.previous.keys - children.current.keys
                         removedKeys.forEach { key ->
                             val removedChild = children.previous[key]
-                            removedChild?.setState(Lifecycle.State.DESTROYED)
+                            removedChild?.setState(PlatformLifecycle.State.DESTROYED)
                         }
                     }
                 }
@@ -81,7 +78,7 @@ internal class ChildNodeLifecycleManager<Routing>(
             }
             .distinctUntilChanged()
 
-    private fun ChildEntry<*>.setState(state: Lifecycle.State) {
+    private fun ChildEntry<*>.setState(state: PlatformLifecycle.State) {
         nodeOrNull?.updateLifecycleState(state)
     }
 

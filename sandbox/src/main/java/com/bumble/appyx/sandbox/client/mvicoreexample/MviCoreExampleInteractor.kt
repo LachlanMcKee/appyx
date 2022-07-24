@@ -1,12 +1,13 @@
 package com.bumble.appyx.sandbox.client.mvicoreexample
 
-import androidx.lifecycle.Lifecycle
 import com.badoo.binder.using
 import com.badoo.mvicore.android.lifecycle.createDestroy
 import com.badoo.mvicore.android.lifecycle.startStop
 import com.badoo.mvicore.feature.Feature
 import com.bumble.appyx.core.children.whenChildAttached
 import com.bumble.appyx.core.clienthelper.interactor.Interactor
+import com.bumble.appyx.core.lifecycle.PlatformLifecycle
+import com.bumble.appyx.core.lifecycle.android.toAndroidLifecycle
 import com.bumble.appyx.core.node.Node
 import com.bumble.appyx.routingsource.backstack.BackStack
 import com.bumble.appyx.routingsource.backstack.activeRouting
@@ -16,10 +17,7 @@ import com.bumble.appyx.sandbox.client.mvicoreexample.MviCoreExampleNode.Routing
 import com.bumble.appyx.sandbox.client.mvicoreexample.MviCoreExampleNode.Routing.Child2
 import com.bumble.appyx.sandbox.client.mvicoreexample.MviCoreExampleViewImpl.Event
 import com.bumble.appyx.sandbox.client.mvicoreexample.feature.EventsToWish
-import com.bumble.appyx.sandbox.client.mvicoreexample.feature.MviCoreExampleFeature
-import com.bumble.appyx.sandbox.client.mvicoreexample.feature.MviCoreExampleFeature.News
-import com.bumble.appyx.sandbox.client.mvicoreexample.feature.MviCoreExampleFeature.State
-import com.bumble.appyx.sandbox.client.mvicoreexample.feature.MviCoreExampleFeature.Wish
+import com.bumble.appyx.sandbox.client.mvicoreexample.feature.MviCoreExampleFeature.*
 import com.bumble.appyx.sandbox.client.mvicoreexample.feature.OutputChild1ToWish
 import com.bumble.appyx.sandbox.client.mvicoreexample.feature.OutputChild2ToWish
 import com.bumble.appyx.sandbox.client.mvicoreexample.feature.StateToViewModel
@@ -44,14 +42,14 @@ class MviCoreExampleInteractor(
         }
     }
 
-    override fun onCreate(lifecycle: Lifecycle) {
-        lifecycle.startStop {
+    override fun onCreate(lifecycle: PlatformLifecycle) {
+        lifecycle.toAndroidLifecycle().startStop {
             bind(feature to view using StateToViewModel)
             bind(view to feature using EventsToWish)
             bind(view to backStackUpdater)
         }
-        whenChildAttached { _: Lifecycle, child: Node ->
-            child.lifecycle.createDestroy {
+        whenChildAttached { _: PlatformLifecycle, child: Node ->
+            child.lifecycle.toAndroidLifecycle().createDestroy {
                 when (child) {
                     is MviCoreChildNode1 -> bind(child.output to feature using OutputChild1ToWish)
                     is MviCoreChildNode2 -> bind(child.output to feature using OutputChild2ToWish)

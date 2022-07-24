@@ -8,12 +8,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import com.bumble.appyx.utils.customisations.NodeCustomisationDirectory
 import com.bumble.appyx.utils.customisations.NodeCustomisationDirectoryImpl
 import com.bumble.appyx.core.integrationpoint.IntegrationPoint
+import com.bumble.appyx.core.lifecycle.LifecycleExpects
+import com.bumble.appyx.core.lifecycle.PlatformLifecycle
+import com.bumble.appyx.core.lifecycle.PlatformLifecycleEventObserver
 import com.bumble.appyx.core.modality.BuildContext
 import com.bumble.appyx.core.node.Node
 import com.bumble.appyx.core.node.build
@@ -40,13 +40,13 @@ fun <N : Node> NodeHost(
         onDispose { integrationPoint.detach() }
     }
     DisposableEffect(node) {
-        onDispose { node.updateLifecycleState(Lifecycle.State.DESTROYED) }
+        onDispose { node.updateLifecycleState(PlatformLifecycle.State.DESTROYED) }
     }
     node.Compose()
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val lifecycle = LifecycleExpects.currentLifecycle()
     DisposableEffect(lifecycle) {
         node.updateLifecycleState(lifecycle.currentState)
-        val observer = LifecycleEventObserver { source, _ ->
+        val observer = PlatformLifecycleEventObserver { source, _ ->
             node.updateLifecycleState(source.lifecycle.currentState)
         }
         lifecycle.addObserver(observer)

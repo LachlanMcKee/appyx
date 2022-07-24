@@ -11,9 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.coroutineScope
 import com.bumble.appyx.core.children.ChildAware
 import com.bumble.appyx.core.children.ChildAwareImpl
 import com.bumble.appyx.core.children.ChildCallback
@@ -22,6 +19,8 @@ import com.bumble.appyx.core.children.ChildEntryMap
 import com.bumble.appyx.core.children.ChildrenCallback
 import com.bumble.appyx.core.composable.ChildRenderer
 import com.bumble.appyx.core.lifecycle.ChildNodeLifecycleManager
+import com.bumble.appyx.core.lifecycle.PlatformLifecycleObserver
+import com.bumble.appyx.core.lifecycle.PlatformLifecycleOwner
 import com.bumble.appyx.core.modality.AncestryInfo
 import com.bumble.appyx.core.modality.BuildContext
 import com.bumble.appyx.core.plugin.Plugin
@@ -181,12 +180,12 @@ abstract class ParentNode<Routing : Any>(
      */
     private fun manageTransitions() {
         lifecycle.addObserver(
-            object : DefaultLifecycleObserver {
-                override fun onStart(owner: LifecycleOwner) {
+            object : PlatformLifecycleObserver {
+                override fun onStart(owner: PlatformLifecycleOwner) {
                     manageTransitionsInForeground()
                 }
 
-                override fun onStop(owner: LifecycleOwner) {
+                override fun onStop(owner: PlatformLifecycleOwner) {
                     manageTransitionsInBackground()
                 }
             }

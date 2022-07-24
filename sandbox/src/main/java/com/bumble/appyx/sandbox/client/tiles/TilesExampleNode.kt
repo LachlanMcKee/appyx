@@ -18,15 +18,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import com.bumble.appyx.routingsource.tiles.Tiles
 import com.bumble.appyx.routingsource.tiles.operation.removeSelected
 import com.bumble.appyx.routingsource.tiles.operation.toggleSelection
 import com.bumble.appyx.routingsource.tiles.transitionhandler.rememberTilesTransitionHandler
 import com.bumble.appyx.core.composable.Child
 import com.bumble.appyx.core.composable.visibleChildrenAsState
+import com.bumble.appyx.core.lifecycle.PlatformLifecycle
+import com.bumble.appyx.core.lifecycle.PlatformLifecycleObserver
+import com.bumble.appyx.core.lifecycle.PlatformLifecycleOwner
 import com.bumble.appyx.core.modality.BuildContext
 import com.bumble.appyx.core.node.Node
 import com.bumble.appyx.core.node.ParentNode
@@ -56,13 +56,13 @@ class TilesExampleNode(
 
     override fun onBuilt() {
         super.onBuilt()
-        whenChildrenAttached { commonLifecycle: Lifecycle, child1: ChildNode, child2: ChildNode ->
-            commonLifecycle.addObserver(object : DefaultLifecycleObserver {
-                override fun onCreate(owner: LifecycleOwner) {
+        whenChildrenAttached { commonLifecycle: PlatformLifecycle, child1: ChildNode, child2: ChildNode ->
+            commonLifecycle.addObserver(object : PlatformLifecycleObserver {
+                override fun onCreate(owner: PlatformLifecycleOwner) {
                     Log.d("TilesExampleNode", "Children $child1 and $child2 were connected")
                 }
 
-                override fun onDestroy(owner: LifecycleOwner) {
+                override fun onDestroy(owner: PlatformLifecycleOwner) {
                     Log.d("TilesExampleNode", "Children $child1 and $child2 were disconnected")
                 }
             })
