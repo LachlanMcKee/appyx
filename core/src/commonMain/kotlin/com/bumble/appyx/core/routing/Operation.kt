@@ -1,14 +1,10 @@
 package com.bumble.appyx.core.routing
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
 interface Operation<Routing, State> :
-        (RoutingElements<Routing, State>) -> RoutingElements<Routing, State>, Parcelable {
+        (RoutingElements<Routing, State>) -> RoutingElements<Routing, State> {
 
     fun isApplicable(elements: RoutingElements<Routing, State>): Boolean
 
-    @Parcelize
     class Noop<Routing, State> : Operation<Routing, State> {
 
         override fun isApplicable(elements: RoutingElements<Routing, State>) = false
