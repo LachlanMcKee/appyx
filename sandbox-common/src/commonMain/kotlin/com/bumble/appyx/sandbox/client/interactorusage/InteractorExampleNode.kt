@@ -1,6 +1,5 @@
 package com.bumble.appyx.sandbox.client.interactorusage
 
-import android.os.Parcelable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,9 +30,10 @@ import com.bumble.appyx.routingsource.backstack.operation.push
 import com.bumble.appyx.routingsource.backstack.transitionhandler.rememberBackstackFader
 import com.bumble.appyx.routingsource.backstack.transitionhandler.rememberBackstackSlider
 import com.bumble.appyx.core.routing.transition.rememberCombinedHandler
+import com.bumble.appyx.sandbox.CommonParcelable
+import com.bumble.appyx.sandbox.CommonParcelize
 import com.bumble.appyx.sandbox.client.interactorusage.InteractorExampleNode.Routing
 import com.bumble.appyx.sandbox.client.interactorusage.InteractorExampleNode.Routing.Child1
-import kotlinx.parcelize.Parcelize
 
 class InteractorExampleNode(
     interactor: Interactor<InteractorExampleNode>,
@@ -51,14 +51,14 @@ class InteractorExampleNode(
     var child2InfoState by mutableStateOf("Here will appear child2 info")
     var child2And3InfoState by mutableStateOf("Here will appear child2 and child3 combined info")
 
-    sealed class Routing : Parcelable {
-        @Parcelize
+    sealed class Routing : CommonParcelable {
+        @CommonParcelize
         object Child1 : Routing()
 
-        @Parcelize
+        @CommonParcelize
         object Child2 : Routing()
 
-        @Parcelize
+        @CommonParcelize
         object Child3 : Routing()
     }
 

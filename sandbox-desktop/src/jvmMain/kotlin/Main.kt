@@ -9,7 +9,6 @@ import com.bumble.appyx.DesktopCoroutineScope
 import com.bumble.appyx.DesktopPlatformLifecycleOwner
 import com.bumble.appyx.core.integration.NodeHost
 import com.bumble.appyx.core.integrationpoint.IntegrationPoint
-import com.bumble.appyx.core.node.LocalNode
 
 fun main() = application {
     val integrationPoint = FooIntegrationPoint()

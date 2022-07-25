@@ -16,6 +16,7 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(project(":core"))
+                implementation(project(":sandbox-common"))
                 implementation(compose.desktop.currentOs)
             }
         }

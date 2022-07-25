@@ -1,6 +1,5 @@
 package com.bumble.appyx.sandbox.client.spotlight
 
-import android.os.Parcelable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.coroutineScope
+//import androidx.lifecycle.coroutineScope
 import com.bumble.appyx.core.composable.Children
 import com.bumble.appyx.core.modality.BuildContext
 import com.bumble.appyx.core.node.Node
@@ -33,6 +32,8 @@ import com.bumble.appyx.routingsource.spotlight.operation.activate
 import com.bumble.appyx.routingsource.spotlight.operation.previous
 import com.bumble.appyx.routingsource.spotlight.operation.updateElements
 import com.bumble.appyx.routingsource.spotlight.transitionhandler.rememberSpotlightSlider
+import com.bumble.appyx.sandbox.CommonParcelable
+import com.bumble.appyx.sandbox.CommonParcelize
 import com.bumble.appyx.sandbox.client.child.ChildNode
 import com.bumble.appyx.sandbox.client.spotlight.SpotlightExampleNode.Item.C1
 import com.bumble.appyx.sandbox.client.spotlight.SpotlightExampleNode.Item.C2
@@ -44,7 +45,6 @@ import com.bumble.appyx.sandbox.client.spotlight.SpotlightExampleNode.State.Load
 import com.bumble.appyx.sandbox.client.spotlight.SpotlightExampleNode.State.Loading
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 
 class SpotlightExampleNode(
     buildContext: BuildContext,
@@ -79,20 +79,20 @@ class SpotlightExampleNode(
         }
     }
 
-    sealed class Routing : Parcelable {
+    sealed class Routing : CommonParcelable {
 
-        @Parcelize
+        @CommonParcelize
         object Child1 : Routing()
 
-        @Parcelize
+        @CommonParcelize
         object Child2 : Routing()
 
-        @Parcelize
+        @CommonParcelize
         object Child3 : Routing()
     }
 
-    @Parcelize
-    private enum class Item(val routing: Routing) : Parcelable {
+    @CommonParcelize
+    private enum class Item(val routing: Routing) : CommonParcelable {
         C1(Child1),
         C2(Child2),
         C3(Child3);

@@ -1,6 +1,5 @@
 package com.bumble.appyx.sandbox.client.combined
 
-import android.os.Parcelable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
@@ -29,9 +28,10 @@ import com.bumble.appyx.routingsource.backstack.BackStack
 import com.bumble.appyx.routingsource.backstack.operation.push
 import com.bumble.appyx.routingsource.backstack.transitionhandler.rememberBackstackFader
 import com.bumble.appyx.core.routing.source.combined.plus
+import com.bumble.appyx.sandbox.CommonParcelable
+import com.bumble.appyx.sandbox.CommonParcelize
 import com.bumble.appyx.sandbox.client.child.ChildNode
 import com.bumble.appyx.sandbox.client.combined.CombinedRoutingSourceNode.Routing.Configuration.Child
-import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
 class CombinedRoutingSourceNode(
@@ -51,14 +51,14 @@ class CombinedRoutingSourceNode(
     routingSource = backStack1 + backStack2,
 ) {
 
-    sealed class Routing : Parcelable {
+    sealed class Routing : CommonParcelable {
         sealed class Permanent : Routing() {
-            @Parcelize
+            @CommonParcelize
             object Child1 : Permanent()
         }
 
         sealed class Configuration : Routing() {
-            @Parcelize
+            @CommonParcelize
             data class Child(val id: String) : Configuration()
         }
     }

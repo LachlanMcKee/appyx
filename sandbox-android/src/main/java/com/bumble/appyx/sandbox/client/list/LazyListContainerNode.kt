@@ -125,7 +125,7 @@ class LazyListContainerNode constructor(
 
     @Composable
     private fun RadioItem(
-        mode: LazyListContainerNode.ListMode,
+        mode: ListMode,
         isSelected: Boolean,
         onClick: () -> Unit,
     ) {

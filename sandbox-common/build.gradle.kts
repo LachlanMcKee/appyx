@@ -30,17 +30,16 @@ kotlin {
 ////            dependencies {
 ////            }
 //        }
-//        val androidMain by getting {
-//            dependencies {
-//            }
-//        }
+        val androidMain by getting {
+            dependencies {
+            }
+        }
 //        val androidTest by getting {
 ////            dependencies {
 ////            }
 //        }
         val desktopMain by getting {
             dependencies {
-                implementation(compose.desktop.currentOs)
             }
         }
 //        val desktopTest by getting
