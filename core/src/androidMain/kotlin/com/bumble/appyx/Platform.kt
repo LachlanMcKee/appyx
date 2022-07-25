@@ -26,5 +26,5 @@ actual fun createPlatformLifecycleRegistry(owner: PlatformLifecycleOwner): Platf
 actual fun currentLifecycle(): PlatformLifecycle =
     AndroidPlatformLifecycle(LocalLifecycleOwner.current.lifecycle)
 
-actual fun createLifecycleOwnerProvider(owner: PlatformLifecycleOwner): ProvidedValue<*>? =
+actual fun createLifecycleOwnerProvider(owner: PlatformLifecycleOwner): ProvidedValue<*> =
     LocalLifecycleOwner provides owner.toAndroidLifecycleOwner()
