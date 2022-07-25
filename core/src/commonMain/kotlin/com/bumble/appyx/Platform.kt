@@ -25,4 +25,5 @@ expect fun createPlatformLifecycleRegistry(owner: PlatformLifecycleOwner): Platf
 @Composable
 expect fun currentLifecycle(): PlatformLifecycle
 
-expect fun createLifecycleOwnerProvider(owner: PlatformLifecycleOwner): ProvidedValue<*>?
+expect fun createLifecycleOwnerProvider(owner: PlatformLifecycleOwner): ProvidedValue<*>
+

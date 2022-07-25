@@ -81,22 +81,12 @@ abstract class Node(
 
     @Composable
     fun Compose(modifier: Modifier = Modifier) {
-        val lifecycleOwnerProvider = createLifecycleOwnerProvider(this)
-        if (lifecycleOwnerProvider != null) {
-            CompositionLocalProvider(
-                LocalNode provides this,
-                lifecycleOwnerProvider,
-            ) {
-                DerivedSetup()
-                View(modifier)
-            }
-        } else {
-            CompositionLocalProvider(
-                LocalNode provides this
-            ) {
-                DerivedSetup()
-                View(modifier)
-            }
+        CompositionLocalProvider(
+            LocalNode provides this,
+            createLifecycleOwnerProvider(this),
+        ) {
+            DerivedSetup()
+            View(modifier)
         }
     }
 

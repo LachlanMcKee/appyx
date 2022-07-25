@@ -3,6 +3,7 @@ package com.bumble.appyx
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.staticCompositionLocalOf
 import com.bumble.appyx.core.lifecycle.*
 import com.bumble.appyx.core.lifecycle.PlatformLifecycle.Event
 import com.bumble.appyx.core.lifecycle.PlatformLifecycle.Event.*
@@ -109,11 +110,55 @@ actual fun createPlatformLifecycleRegistry(owner: PlatformLifecycleOwner): Platf
     }
 
 @Composable
-actual fun currentLifecycle(): PlatformLifecycle {
-    throw IllegalStateException("Do not call current lifecycle for desktop (for now at least)")
-}
+actual fun currentLifecycle(): PlatformLifecycle =
+    DesktopPlatformLifecycleOwner.current.lifecycle
 
-actual fun createLifecycleOwnerProvider(owner: PlatformLifecycleOwner): ProvidedValue<*>? =
-    null
+actual fun createLifecycleOwnerProvider(owner: PlatformLifecycleOwner): ProvidedValue<*> =
+    DesktopPlatformLifecycleOwner provides owner
 
 var DesktopCoroutineScope: CoroutineScope? = null
+
+val DesktopPlatformLifecycleOwner = staticCompositionLocalOf<PlatformLifecycleOwner> {
+    error("CompositionLocal DesktopPlatformLifecycleOwner not present")
+}
+
+class CreatedPlatformLifecycleOwner : PlatformLifecycleOwner {
+    override val lifecycle: PlatformLifecycle
+        get() = object: PlatformLifecycle {
+            override fun asFlow(): Flow<State> = throw IllegalStateException("Should not be called")
+
+            override val currentState: State
+                get() = State.CREATED
+
+            override val coroutineScope: CoroutineScope
+                get() = checkNotNull(DesktopCoroutineScope) { "Desktop CoroutineScope not set" }
+
+            override fun subscribe(
+                onCreate: () -> Unit,
+                onStart: () -> Unit,
+                onResume: () -> Unit,
+                onPause: () -> Unit,
+                onStop: () -> Unit,
+                onDestroy: () -> Unit
+            ) {
+                throw IllegalStateException("Should not be called")
+            }
+
+            override fun addObserver(observer: PlatformLifecycleObserver) {
+                // no-op
+            }
+
+            override fun addObserver(observer: PlatformLifecycleEventObserver) {
+                // no-op
+            }
+
+            override fun removeObserver(observer: PlatformLifecycleObserver) {
+                // no-op
+            }
+
+            override fun removeObserver(observer: PlatformLifecycleEventObserver) {
+                // no-op
+            }
+        }
+
+}
