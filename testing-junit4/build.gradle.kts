@@ -9,6 +9,7 @@ java {
 }
 
 dependencies {
-    api(project(":core"))
-    implementation(libs.kotlin.test)
+    api(project(":testing-unit-common"))
+    implementation(libs.junit)
+    implementation(libs.kotlin.coroutines.test)
 }
