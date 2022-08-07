@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:dist="http://schemas.android.com/apk/distribution"
+    package="com.bumble.appyx.sample.dynamic.feature"
+    split="feature">
+
+    <dist:module
+        dist:instant="false"
+        dist:onDemand="true"
+        dist:title="@string/feature_name">
+        <dist:fusing dist:include="false"/>
+    </dist:module>
+</manifest>

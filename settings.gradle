@@ -28,6 +28,8 @@ include ':app',
         ':testing-unit-common',
         ':routing-source-addons',
         ':customisations',
+        ':samples:dynamic-feature:app',
+        ':samples:dynamic-feature:feature',
         ':samples:navigation-compose'
 
 includeBuild("plugins/publish-plugin")
