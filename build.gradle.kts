@@ -55,13 +55,9 @@ subprojects {
             plugins.hasPlugin("com.android.application") ||
                     plugins.hasPlugin("com.android.library")
 
-        if (isAndroidLibrary || isJavaLibrary) {
+        if (isAndroidLibrary) {
             tasks.register("printAllDependencies", DependencyReportTask::class.java) {
-                if (isAndroidLibrary) {
-                    setConfiguration("releaseRuntimeClasspath")
-                } else {
-                    setConfiguration("runtimeClasspath")
-                }
+                setConfiguration("releaseRuntimeClasspath")
             }
         }
     }
