@@ -4,7 +4,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
-import org.gradle.kotlin.dsl.support.appendReproducibleNewLine
 import java.io.ByteArrayOutputStream
 import java.io.File
 
@@ -48,8 +47,9 @@ abstract class ReleaseDependenciesDiffFilesTask : DefaultTask() {
         val diffOutput = buildString {
             appendLine("Dependency diff")
             appendLine("```diff")
-            if (diffResults.isNotEmpty()) {
-                diffResults.onEach(::appendLine)
+            val filteredResults = filter(diffResults)
+            if (filteredResults.isNotEmpty()) {
+                filteredResults.onEach(::appendLine)
             } else {
                 appendLine("No changes")
             }
@@ -61,6 +61,24 @@ abstract class ReleaseDependenciesDiffFilesTask : DefaultTask() {
         } else {
             outputFile.get().asFile.writeText(diffOutput.substring(0, MAX_CHARACTERS - 4) + "...")
         }
+    }
+
+    private fun filter(diffResults: List<String>): List<String> {
+        return diffResults
+            .asSequence()
+            .map { it.trimStart() }
+            .filter { it.startsWith('+') || it.startsWith('-') }
+            .filter {
+                // Avoid adding our project dependencies to the report
+                !it.contains("project :")
+            }
+            .map { line ->
+                val initialChar = line[0]
+                initialChar + " " + line.dropWhile { !it.isLetter() }
+            }
+            .distinct()
+            .sortedWith(compareBy({ it.substring(1) }, { it[0] }))
+            .toList()
     }
 
     private fun getDirectoryFiles(directoryName: String): Array<File> {
@@ -78,24 +96,15 @@ abstract class ReleaseDependenciesDiffFilesTask : DefaultTask() {
     ): List<String> =
         //  TODO: Handle cases where modules are added, renamed or removed
         baselineDependencyFiles
-            .mapNotNull { baselineDependencyFile: File ->
+            .flatMap { baselineDependencyFile: File ->
                 val dependencyFile =
                     dependencyFiles.single { it.name == baselineDependencyFile.name }
 
-                val resultLines = executeDependencyTreeDiff(baselineDependencyFile, dependencyFile)
+                executeDependencyTreeDiff(baselineDependencyFile, dependencyFile)
                     .toString("UTF-8")
                     .lineSequence()
                     .filter { it.isNotEmpty() }
                     .toList()
-
-                if (resultLines.isNotEmpty()) {
-                    createDiffResult(
-                        projectName = baselineDependencyFile.name.replace("_", ":"),
-                        resultLines = resultLines
-                    )
-                } else {
-                    null
-                }
             }
 
     private fun executeDependencyTreeDiff(file1: File, file2: File): ByteArrayOutputStream =
@@ -105,15 +114,6 @@ abstract class ReleaseDependenciesDiffFilesTask : DefaultTask() {
                 args(file1, file2)
                 standardOutput = outputStream
             }
-        }
-
-    private fun createDiffResult(projectName: String, resultLines: List<String>): String =
-        buildString {
-            appendLine("=========================================")
-            appendLine(projectName)
-            appendLine("=========================================")
-            resultLines.onEach(::appendLine)
-            appendReproducibleNewLine()
         }
 
     private companion object {
