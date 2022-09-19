@@ -40,6 +40,11 @@ abstract class ReleaseDependenciesDiffFilesTask : DefaultTask() {
             )
         )
 
+        if (diffResults.isNotEmpty()) {
+            logger.warn("Dependency Diff:")
+            diffResults.onEach(logger::warn)
+        }
+
         val diffOutput = buildString {
             appendLine("Dependency diff")
             appendLine("```diff")
@@ -50,6 +55,7 @@ abstract class ReleaseDependenciesDiffFilesTask : DefaultTask() {
             }
             appendLine("```")
         }
+
         if (diffOutput.length < MAX_CHARACTERS) {
             outputFile.get().asFile.writeText(diffOutput)
         } else {
