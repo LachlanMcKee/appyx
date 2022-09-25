@@ -11,11 +11,11 @@ import kotlinx.parcelize.Parcelize
  * [A, B, C] + Pop = [A, B]
  */
 @Parcelize
-class Pop<T : Any> : BackStackOperation<T> {
+class Pop<T : Any>(private val emptyBackStackAllowed: Boolean = false) : BackStackOperation<T> {
 
     override fun isApplicable(elements: BackStackElements<T>): Boolean =
         elements.any { it.targetState == BackStack.State.ACTIVE } &&
-                elements.any { it.targetState == BackStack.State.STASHED }
+                (emptyBackStackAllowed || elements.any { it.targetState == BackStack.State.STASHED })
 
     override fun invoke(
         elements: BackStackElements<T>
@@ -25,7 +25,9 @@ class Pop<T : Any> : BackStackOperation<T> {
         val unStashIndex =
             elements.indexOfLast { it.targetState == BackStack.State.STASHED }
         require(destroyIndex != -1) { "Nothing to destroy, state=$elements" }
-        require(unStashIndex != -1) { "Nothing to remove from stash, state=$elements" }
+        if (!emptyBackStackAllowed) {
+            require(unStashIndex != -1) { "Nothing to remove from stash, state=$elements" }
+        }
         return elements.mapIndexed { index, element ->
             when (index) {
                 destroyIndex -> element.transitionTo(
@@ -47,5 +49,5 @@ class Pop<T : Any> : BackStackOperation<T> {
 }
 
 fun <T : Any> BackStack<T>.pop() {
-    accept(Pop())
+    accept(Pop(emptyBackStackAllowed))
 }
