@@ -7,7 +7,7 @@ import com.bumble.appyx.navmodel.backstack.operation.Pop
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class PopBackPressHandler<NavTarget : Any> :
+class PopBackPressHandler<NavTarget : Any>(private val emptyBackStackAllowed: Boolean) :
     BaseBackPressHandlerStrategy<NavTarget, BackStack.State>() {
 
     override val canHandleBackPressFlow: Flow<Boolean> by lazy {
@@ -18,6 +18,6 @@ class PopBackPressHandler<NavTarget : Any> :
         elements.any { it.targetState == BackStack.State.STASHED }
 
     override fun onBackPressed() {
-        navModel.accept(Pop())
+        navModel.accept(Pop(emptyBackStackAllowed))
     }
 }
