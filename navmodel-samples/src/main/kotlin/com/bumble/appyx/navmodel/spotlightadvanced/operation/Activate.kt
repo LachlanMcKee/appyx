@@ -3,7 +3,9 @@ package com.bumble.appyx.navmodel.spotlightadvanced.operation
 import com.bumble.appyx.core.navigation.NavElements
 import com.bumble.appyx.navmodel.spotlightadvanced.SpotlightAdvanced
 import com.bumble.appyx.navmodel.spotlightadvanced.SpotlightAdvanced.State
-import com.bumble.appyx.navmodel.spotlightadvanced.SpotlightAdvanced.State.*
+import com.bumble.appyx.navmodel.spotlightadvanced.SpotlightAdvanced.State.Active
+import com.bumble.appyx.navmodel.spotlightadvanced.SpotlightAdvanced.State.InactiveAfter
+import com.bumble.appyx.navmodel.spotlightadvanced.SpotlightAdvanced.State.InactiveBefore
 import com.bumble.appyx.navmodel.spotlightadvanced.currentIndex
 import kotlinx.parcelize.Parcelize
 

@@ -126,17 +126,13 @@ class PopRight<T : Any>(private val twoPanelsEnabled: Boolean) : BackStackOperat
                 }
                 Active1 -> {
                     if (!twoPanelsEnabled) {
-                        throw IllegalStateException(
-                            "Unexpected state when popping right: ${newLastElement.targetState}"
-                        )
+                        error("Unexpected state when popping right: ${newLastElement.targetState}")
                     } else {
                         newElements
                     }
                 }
                 else -> {
-                    throw IllegalStateException(
-                        "Unexpected state when popping right: ${newLastElement.targetState}"
-                    )
+                    error("Unexpected state when popping right: ${newLastElement.targetState}")
                 }
             }
         } else {

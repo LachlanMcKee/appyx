@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -88,83 +88,71 @@ class DualBackStackContainerNode(
             val visibleChildren by dualBackStack.visibleChildrenAsState()
             val currentTwoPanels by showTwoPanelsFlow.collectAsState()
 
-            // Refactor to avoid looping through the list so many times.
-            val activeLeftPanelCount: Int =
-                visibleChildren.count { it.targetState == Active1 || it.fromState == Active1 }
-            val allLeftPanelCount: Int =
-                allChildren.count {
-                    it.targetState == Active1 || it.fromState == Active1 ||
-                            it.targetState == StashedInBackStack1 || it.fromState == StashedInBackStack1
-                }
-
-            val activeRightPanelCount: Int =
-                visibleChildren.count { it.targetState == Active2 || it.fromState == Active2 }
-            val allRightPanelCount: Int =
-                allChildren.count {
-                    it.targetState == Active2 || it.fromState == Active2 ||
-                            it.targetState == StashedInBackStack2 || it.fromState == StashedInBackStack2
-                }
+            val viewState by derivedStateOf {
+                getViewState(
+                    visibleChildren = visibleChildren,
+                    allChildren = allChildren
+                )
+            }
 
             Column {
-                Row {
-                    Button(onClick = { dualBackStack.pushLeft(NavTarget.LeftScreen(allLeftPanelCount + 1)) }) {
-                        Text("Add Panel 1")
-                    }
-                    Button(onClick = {
-                        dualBackStack.pushRight(
-                            NavTarget.RightScreen(
-                                allRightPanelCount + 1
-                            )
+                PanelControls(
+                    viewState = viewState,
+                    pushLeftClick = {
+                        dualBackStack.pushLeft(
+                            NavTarget.LeftScreen(viewState.allLeftPanelCount + 1)
                         )
-                    }) {
-                        Text("Add Panel 2")
-                    }
-                }
-                Row {
-                    Button(onClick = { dualBackStack.popLeft() }, enabled = allLeftPanelCount > 1) {
-                        Text("Pop Panel 1")
-                    }
-                    Button(
-                        onClick = { dualBackStack.popRight() },
-                        enabled = allRightPanelCount > 0
-                    ) {
-                        Text("Pop Panel 2")
-                    }
-                    Button(
-                        onClick = { dualBackStack.pop() },
-                        enabled = allLeftPanelCount > 1 || allRightPanelCount > 0
-                    ) {
-                        Text("Pop")
-                    }
-                }
+                    },
+                    pushRightClick = {
+                        dualBackStack.pushRight(
+                            NavTarget.RightScreen(viewState.allRightPanelCount + 1)
+                        )
+                    },
+                    popLeftClick = { dualBackStack.popLeft() },
+                    popRightClick = { dualBackStack.popRight() },
+                    popClick = { dualBackStack.pop() }
+                )
+
                 Text("Two panel mode: $currentTwoPanels")
 
                 if (visibleChildren.isNotEmpty()) {
-                    check(visibleChildren.size < 5) {
-                        "There should not be more than 4 elements. elements: $visibleChildren"
-                    }
+                    Panels(
+                        viewState = viewState,
+                        visibleChildren = visibleChildren
+                    )
+                }
+            }
+        }
+    }
 
-                    if (activeRightPanelCount == 0) {
-                        repeat(activeLeftPanelCount) { index ->
-                            AddChild(visibleChildren[index])
-                        }
-                    } else if (activeLeftPanelCount == 0) {
-                        repeat(activeRightPanelCount) { index ->
-                            AddChild(visibleChildren[index])
-                        }
-                    } else {
-                        Row(Modifier.fillMaxSize()) {
-                            Box(Modifier.fillMaxSize().weight(1f)) {
-                                repeat(activeLeftPanelCount) { index ->
-                                    AddChild(visibleChildren[index])
-                                }
-                            }
-                            Box(Modifier.fillMaxSize().weight(1f)) {
-                                repeat(activeRightPanelCount) { index ->
-                                    AddChild(visibleChildren[activeLeftPanelCount + index])
-                                }
-                            }
-                        }
+    @Composable
+    private fun Panels(
+        viewState: DualBackStackViewState,
+        visibleChildren: List<NavElement<NavTarget, out DualBackStack.State>>
+    ) {
+        check(viewState.totalVisibleChildren <= MAXIMUM_VISIBLE_CHILDREN) {
+            "There should not be more than $MAXIMUM_VISIBLE_CHILDREN elements. " +
+                    "elements: ${viewState.totalVisibleChildren}"
+        }
+
+        if (viewState.activeRightPanelCount == 0) {
+            repeat(viewState.activeLeftPanelCount) { index ->
+                AddChild(visibleChildren[index])
+            }
+        } else if (viewState.activeLeftPanelCount == 0) {
+            repeat(viewState.activeRightPanelCount) { index ->
+                AddChild(visibleChildren[index])
+            }
+        } else {
+            Row(Modifier.fillMaxSize()) {
+                Box(Modifier.fillMaxSize().weight(1f)) {
+                    repeat(viewState.activeLeftPanelCount) { index ->
+                        AddChild(visibleChildren[index])
+                    }
+                }
+                Box(Modifier.fillMaxSize().weight(1f)) {
+                    repeat(viewState.activeRightPanelCount) { index ->
+                        AddChild(visibleChildren[viewState.activeLeftPanelCount + index])
                     }
                 }
             }
@@ -179,5 +167,43 @@ class DualBackStackContainerNode(
         ) { child, _ ->
             child()
         }
+    }
+
+    private fun getViewState(
+        visibleChildren: List<NavElement<NavTarget, out DualBackStack.State>>,
+        allChildren: List<NavElement<NavTarget, out DualBackStack.State>>,
+    ): DualBackStackViewState {
+        // Refactor to avoid looping through the list so many times.
+        val activeLeftPanelCount: Int by derivedStateOf {
+            visibleChildren.count { it.targetState == Active1 || it.fromState == Active1 }
+        }
+        val allLeftPanelCount: Int by derivedStateOf {
+            allChildren.count {
+                it.targetState == Active1 || it.fromState == Active1 ||
+                        it.targetState == StashedInBackStack1 || it.fromState == StashedInBackStack1
+            }
+        }
+
+        val activeRightPanelCount: Int by derivedStateOf {
+            visibleChildren.count { it.targetState == Active2 || it.fromState == Active2 }
+        }
+        val allRightPanelCount: Int by derivedStateOf {
+            allChildren.count {
+                it.targetState == Active2 || it.fromState == Active2 ||
+                        it.targetState == StashedInBackStack2 || it.fromState == StashedInBackStack2
+            }
+        }
+        return DualBackStackViewState(
+            totalVisibleChildren = visibleChildren.size,
+            activeLeftPanelCount = activeLeftPanelCount,
+            allLeftPanelCount = allLeftPanelCount,
+            activeRightPanelCount = activeRightPanelCount,
+            allRightPanelCount = allRightPanelCount,
+        )
+    }
+
+    private companion object {
+        // There can are two active, and two that can be animated between.
+        private const val MAXIMUM_VISIBLE_CHILDREN = 4
     }
 }

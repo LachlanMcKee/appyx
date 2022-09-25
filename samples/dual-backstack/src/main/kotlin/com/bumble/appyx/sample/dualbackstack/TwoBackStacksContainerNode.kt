@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -88,106 +88,74 @@ class TwoBackStacksContainerNode(
 
             val allBackStack1Children by backStack1.childrenAsState()
             val allBackStack2Children by backStack2.childrenAsState()
-
-//            val visibleChildren by dualBackStack.visibleChildrenAsState()
-//            LaunchedEffect(dualBackStack) {
-//                dualBackStack.init(twoPanelFlow)
-//            }
             val currentTwoPanels by showTwoPanelsFlow.collectAsState()
-//
-//            // Refactor to avoid looping through the list so many times.
-//            val activeLeftPanelCount: Int =
-//                visibleChildren.count { it.targetState == Active1 || it.fromState == Active1 }
-//            val allLeftPanelCount: Int =
-//                allChildren.count {
-//                    it.targetState == Active1 || it.fromState == Active1 ||
-//                            it.targetState == StashedInBackStack1 || it.fromState == StashedInBackStack1
-//                }
-//
-//            val activeRightPanelCount: Int =
-//                visibleChildren.count { it.targetState == Active2 || it.fromState == Active2 }
-//            val allRightPanelCount: Int =
-//                allChildren.count {
-//                    it.targetState == Active2 || it.fromState == Active2 ||
-//                            it.targetState == StashedInBackStack2 || it.fromState == StashedInBackStack2
-//                }
 
-            val backStack1VisibleChildrenCount = visibleBackStack1Children.count()
-            val backStack2VisibleChildrenCount = visibleBackStack2Children.count()
-            val backStack1AllChildrenCount = allBackStack1Children.count()
-            val backStack2AllChildrenCount = allBackStack2Children.count()
+            val viewState by derivedStateOf {
+                getViewState(
+                    visibleBackStack1Children = visibleBackStack1Children,
+                    visibleBackStack2Children = visibleBackStack2Children,
+                    allBackStack1Children = allBackStack1Children,
+                    allBackStack2Children = allBackStack2Children
+                )
+            }
 
             Column {
-                Row {
-                    Button(onClick = {
-                        backStack1.push(
-                            NavTarget.LeftScreen(
-                                backStack1AllChildrenCount + 1
-                            )
-                        )
-                    }) {
-                        Text("Add Panel 1")
+                PanelControls(
+                    viewState = viewState,
+                    pushLeftClick = {
+                        backStack1.push(NavTarget.LeftScreen(viewState.allLeftPanelCount + 1))
+                    },
+                    pushRightClick = {
+                        backStack2.push(NavTarget.RightScreen(viewState.allRightPanelCount + 1))
+                    },
+                    popLeftClick = { backStack1.pop() },
+                    popRightClick = { backStack2.pop() },
+                    popClick = {
+                        if (viewState.allRightPanelCount > 0) {
+                            backStack2.pop()
+                        } else {
+                            backStack1.pop()
+                        }
                     }
-                    Button(onClick = {
-                        backStack2.push(
-                            NavTarget.RightScreen(
-                                backStack2AllChildrenCount + 1
-                            )
-                        )
-                    }) {
-                        Text("Add Panel 2")
-                    }
-                }
-                Row {
-                    Button(
-                        onClick = { backStack1.pop() },
-                        enabled = backStack1AllChildrenCount > 1
-                    ) {
-                        Text("Pop Panel 1")
-                    }
-                    Button(
-                        onClick = { backStack2.pop() },
-                        enabled = backStack2AllChildrenCount > 0
-                    ) {
-                        Text("Pop Panel 2")
-                    }
-                    Button(
-                        onClick = {
-                            if (backStack2AllChildrenCount > 0) {
-                                backStack2.pop()
-                            } else {
-                                backStack1.pop()
-                            }
-                        },
-                        enabled = backStack1AllChildrenCount > 1 || backStack2AllChildrenCount > 0
-                    ) {
-                        Text("Pop")
-                    }
-                }
+                )
+
                 Text("Two panel mode: $currentTwoPanels")
 
-                if (backStack1VisibleChildrenCount > 0 || backStack2VisibleChildrenCount > 0) {
-                    if (backStack2VisibleChildrenCount == 0) {
-                        repeat(backStack1VisibleChildrenCount) { index ->
-                            AddChild(visibleBackStack1Children[index])
-                        }
-                    } else if (backStack1VisibleChildrenCount == 0) {
-                        repeat(backStack2VisibleChildrenCount) { index ->
-                            AddChild(visibleBackStack2Children[index])
-                        }
-                    } else {
-                        Row(Modifier.fillMaxSize()) {
-                            Box(Modifier.fillMaxSize().weight(1f)) {
-                                repeat(visibleBackStack1Children.size) { index ->
-                                    AddChild(visibleBackStack1Children[index])
-                                }
-                            }
-                            Box(Modifier.fillMaxSize().weight(1f)) {
-                                repeat(visibleBackStack2Children.size) { index ->
-                                    AddChild(visibleBackStack2Children[index])
-                                }
-                            }
-                        }
+                if (viewState.activeLeftPanelCount > 0 || viewState.activeRightPanelCount > 0) {
+                    Panels(
+                        viewState = viewState,
+                        visibleBackStack1Children = visibleBackStack1Children,
+                        visibleBackStack2Children = visibleBackStack2Children
+                    )
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun Panels(
+        viewState: DualBackStackViewState,
+        visibleBackStack1Children: List<NavElement<NavTarget, out BackStack.State>>,
+        visibleBackStack2Children: List<NavElement<NavTarget, out BackStack.State>>
+    ) {
+        if (viewState.activeRightPanelCount == 0) {
+            repeat(viewState.activeLeftPanelCount) { index ->
+                AddChild(visibleBackStack1Children[index])
+            }
+        } else if (viewState.activeLeftPanelCount == 0) {
+            repeat(viewState.activeRightPanelCount) { index ->
+                AddChild(visibleBackStack2Children[index])
+            }
+        } else {
+            Row(Modifier.fillMaxSize()) {
+                Box(Modifier.fillMaxSize().weight(1f)) {
+                    repeat(visibleBackStack1Children.size) { index ->
+                        AddChild(visibleBackStack1Children[index])
+                    }
+                }
+                Box(Modifier.fillMaxSize().weight(1f)) {
+                    repeat(visibleBackStack2Children.size) { index ->
+                        AddChild(visibleBackStack2Children[index])
                     }
                 }
             }
@@ -203,4 +171,18 @@ class TwoBackStacksContainerNode(
             child()
         }
     }
+
+    private fun getViewState(
+        visibleBackStack1Children: List<NavElement<NavTarget, out BackStack.State>>,
+        visibleBackStack2Children: List<NavElement<NavTarget, out BackStack.State>>,
+        allBackStack1Children: List<NavElement<NavTarget, out BackStack.State>>,
+        allBackStack2Children: List<NavElement<NavTarget, out BackStack.State>>,
+    ): DualBackStackViewState =
+        DualBackStackViewState(
+            totalVisibleChildren = visibleBackStack1Children.size + visibleBackStack2Children.size,
+            activeLeftPanelCount = visibleBackStack1Children.size,
+            allLeftPanelCount = allBackStack1Children.size,
+            activeRightPanelCount = visibleBackStack2Children.size,
+            allRightPanelCount = allBackStack2Children.size,
+        )
 }
