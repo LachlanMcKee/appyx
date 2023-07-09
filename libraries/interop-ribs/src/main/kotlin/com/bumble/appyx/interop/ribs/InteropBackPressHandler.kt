@@ -23,10 +23,10 @@ internal class InteropBackPressHandler :
     NodeLifecycleAware {
 
     private val dispatcher = OnBackPressedDispatcher()
-    private lateinit var lifecycle: Lifecycle
+    private lateinit var nodeLifecycle: Lifecycle
 
     override fun onCreate(nodeLifecycle: Lifecycle) {
-        lifecycle = nodeLifecycle
+        this.nodeLifecycle = nodeLifecycle
     }
 
     override fun handleBackPress(): Boolean =
@@ -37,9 +37,10 @@ internal class InteropBackPressHandler :
             false
         }
 
-    override fun getLifecycle(): Lifecycle = lifecycle
+    override val lifecycle: Lifecycle
+        get() = nodeLifecycle
 
-    override fun getOnBackPressedDispatcher(): OnBackPressedDispatcher =
-        dispatcher
+    override val onBackPressedDispatcher: OnBackPressedDispatcher
+        get() = dispatcher
 
 }

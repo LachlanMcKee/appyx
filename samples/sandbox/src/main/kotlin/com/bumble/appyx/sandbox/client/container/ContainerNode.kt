@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +35,8 @@ import com.bumble.appyx.sandbox.client.container.ContainerNode.NavTarget.Blocker
 import com.bumble.appyx.sandbox.client.container.ContainerNode.NavTarget.Customisations
 import com.bumble.appyx.sandbox.client.container.ContainerNode.NavTarget.IntegrationPointExample
 import com.bumble.appyx.sandbox.client.container.ContainerNode.NavTarget.LazyExamples
+import com.bumble.appyx.sandbox.client.container.ContainerNode.NavTarget.MviCoreExample
+import com.bumble.appyx.sandbox.client.container.ContainerNode.NavTarget.MviCoreLeafExample
 import com.bumble.appyx.sandbox.client.container.ContainerNode.NavTarget.NavModelExamples
 import com.bumble.appyx.sandbox.client.container.ContainerNode.NavTarget.Picker
 import com.bumble.appyx.sandbox.client.customisations.CustomisationsNode
@@ -42,6 +44,8 @@ import com.bumble.appyx.sandbox.client.explicitnavigation.ExplicitNavigationExam
 import com.bumble.appyx.sandbox.client.integrationpoint.IntegrationPointExampleNode
 import com.bumble.appyx.sandbox.client.interop.InteropExampleActivity
 import com.bumble.appyx.sandbox.client.list.LazyListContainerNode
+import com.bumble.appyx.sandbox.client.mvicoreexample.MviCoreExampleBuilder
+import com.bumble.appyx.sandbox.client.mvicoreexample.leaf.MviCoreLeafBuilder
 import com.bumble.appyx.sandbox.client.navmodels.NavModelExamplesNode
 import com.bumble.appyx.utils.customisations.NodeCustomisation
 import kotlinx.parcelize.Parcelize
@@ -79,6 +83,12 @@ class ContainerNode internal constructor(
 
         @Parcelize
         object Customisations : NavTarget()
+
+        @Parcelize
+        object MviCoreExample : NavTarget()
+
+        @Parcelize
+        object MviCoreLeafExample : NavTarget()
     }
 
     @Suppress("ComplexMethod")
@@ -90,6 +100,11 @@ class ContainerNode internal constructor(
             is IntegrationPointExample -> IntegrationPointExampleNode(buildContext)
             is BlockerExample -> BlockerExampleNode(buildContext)
             is Customisations -> CustomisationsNode(buildContext)
+            is MviCoreExample -> MviCoreExampleBuilder().build(buildContext, "MVICore initial state")
+            is MviCoreLeafExample -> MviCoreLeafBuilder().build(
+                buildContext,
+                "MVICore leaf initial state"
+            )
         }
 
     @Composable
@@ -97,7 +112,7 @@ class ContainerNode internal constructor(
         Children(
             modifier = modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colors.background),
+                .background(MaterialTheme.colorScheme.background),
             navModel = backStack,
             transitionHandler = rememberCombinedHandler(
                 handlers = immutableListOf(rememberBackstackSlider(), rememberBackstackFader())
@@ -139,6 +154,8 @@ class ContainerNode internal constructor(
                 }
                 TextButton("Lazy Examples") { backStack.push(LazyExamples) }
                 TextButton("Blocker") { backStack.push(BlockerExample) }
+                TextButton("MVICore Example") { backStack.push(MviCoreExample) }
+                TextButton("MVICore Leaf Example") { backStack.push(MviCoreLeafExample) }
             }
         }
     }

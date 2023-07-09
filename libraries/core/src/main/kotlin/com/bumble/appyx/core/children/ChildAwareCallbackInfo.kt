@@ -1,9 +1,9 @@
 package com.bumble.appyx.core.children
 
 import androidx.lifecycle.Lifecycle
-import com.bumble.appyx.core.node.Node
 import com.bumble.appyx.core.lifecycle.MinimumCombinedLifecycle
 import com.bumble.appyx.core.lifecycle.isDestroyed
+import com.bumble.appyx.core.node.Node
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 import kotlin.reflect.safeCast
@@ -12,7 +12,7 @@ internal sealed class ChildAwareCallbackInfo {
 
     abstract fun onRegistered(activeNodes: List<Node>)
 
-    class Single<T : Node>(
+    class Single<T : Any>(
         private val child: KClass<T>,
         private val callback: ChildCallback<T>,
         private val parentLifecycle: Lifecycle,
@@ -39,7 +39,7 @@ internal sealed class ChildAwareCallbackInfo {
 
     }
 
-    class Double<T1 : Node, T2 : Node>(
+    class Double<T1 : Any, T2 : Any>(
         private val child1: KClass<T1>,
         private val child2: KClass<T2>,
         private val callback: ChildrenCallback<T1, T2>,
@@ -47,7 +47,7 @@ internal sealed class ChildAwareCallbackInfo {
     ) : ChildAwareCallbackInfo() {
 
         fun onNewNodeAppeared(
-            activeNodes: List<Node>,
+            activeNodes: Collection<Node>,
             newNode: Node,
             ignoreNodes: Set<Node>,
         ) {

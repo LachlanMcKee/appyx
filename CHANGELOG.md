@@ -2,10 +2,90 @@
 
 ## Pending changes
 
+-
+
+---
+
+## 1.3.0
+
+- [#425](https://github.com/bumble-tech/appyx/pull/425) – **Fixed**: Up navigation should be properly propagated from Appyx to RIBs
+- [#384](https://github.com/bumble-tech/appyx/issues/384) – **Updated**: Compose BOM version and activity-compose version
+
+<div style="text-align: center"><small>22 Jun 2023</small></div>
+
+---
+
+## 1.2.0
+
+- [#393](https://github.com/bumble-tech/appyx/pull/393) – **Breaking change**: Removed non-lazy implementations from `NodeCustomisationDirectory`
+- [#393](https://github.com/bumble-tech/appyx/pull/393) – **Breaking change**: Removed `NodeCustomisationDirectoryImpl#put(vararg values: T)` due to potential uncaught bugs. Please call the reified `put` extension function instead.
+
+<div style="text-align: center"><small>11 Apr 2023</small></div>
+
+---
+
+## 1.1.2
+
+- [#391](https://github.com/bumble-tech/appyx/pull/391) – **Added**: Introduced `putLazy` and `putSubDirectoryLazy` functions within `NodeCustomisationDirectoryImpl` via `LazyMutableNodeCustomisationDirectory`
+
+<div style="text-align: center"><small>04 Apr 2023</small></div>
+
+---
+
+## 1.1.1
+
+- [#386](https://github.com/bumble-tech/appyx/pull/386) – **Updated**: RIBs version to 0.39.0
+
+<div style="text-align: center"><small>31 Mar 2023</small></div>
+
+---
+
+## 1.1.0
+
+- [#383](https://github.com/bumble-tech/appyx/pull/383) – **Changed**: Removed deprecated methods in Node, ParentNode and CombinedHandler classes
+- [#376](https://github.com/bumble-tech/appyx/issues/376) – **Changed**: Androidx lifecycle version updated to 2.6.1.
+- [#376](https://github.com/bumble-tech/appyx/issues/376) – **Updated**: Kotlin and Compose compiler version updated to 1.8.10 to align kotlin version used in androidx lifecycle  
+- [#375](https://github.com/bumble-tech/appyx/issues/375) – **Fixed**: SaveableStateHolder does no longer save state for destroyed elements
+
+<div style="text-align: center"><small>27 Mar 2023</small></div>
+
+---
+
+## 1.0.5
+
+- [#370](https://github.com/bumble-tech/appyx/pull/370) – **Added**: `RetainedInstanceStore` has two new functions which allows a developer to check whether an object is retained. These are: `isRetainedByStoreId` and `isRetained`.
+
+<div style="text-align: center"><small>04 Mar 2023</small></div>
+
+---
+
+## 1.0.4
+
+- [#361](https://github.com/bumble-tech/appyx/pull/361) – **Added**: Introduced `RetainedInstanceStore`. This provides developers the ability to retain objects between configuration changes.
+- [#336](https://github.com/bumble-tech/appyx/pull/336) – **Updated**: ChildAware API does not enforce Node subtypes only anymore, making it possible to use interfaces as public contracts for child nodes.
+
+<div style="text-align: center"><small>20 Feb 2023</small></div>
+
+---
+
+## 1.0.3
+
+- [#325](https://github.com/bumble-tech/appyx/pull/325) – **Fixed**: Crash when using PermanentChild API in View testing
+
+<div style="text-align: center"><small>23 Jan 2023</small></div>
+
+---
+
+## 1.0.2
+
 - [#287](https://github.com/bumble-tech/appyx/pull/287) – **Added**: Introduced a new `rememberCombinedHandler` implementation that takes an immutable list to avoid non-skippable compositions. The previous implementation is now deprecated.
 - [#287](https://github.com/bumble-tech/appyx/pull/287) – **Added**: `ImmutableList` has been added to avoid non-skippable compositions. 
 - [#289](https://github.com/bumble-tech/appyx/issues/289) – **Added**: Introduced `interop-rx3` for RxJava 3 support. This has identical functionality to `interop-rx2`.
 - [#298](https://github.com/bumble-tech/appyx/pulls/298) – **Updated**: ChildView documentation. `TransitionDescriptor` generics has been renamed to `NavTarget` and `State`
+- [#307](https://github.com/bumble-tech/appyx/pull/307) - **Added**: `Spotlight.current()` method to observe currently active `NavTarget`.
+- [#314](https://github.com/bumble-tech/appyx/pull/314) – **Fixed**: Lifecycle is properly destroyed for suspended nodes.
+
+<div style="text-align: center"><small>10 Jan 2023</small></div>
 
 ---
 
