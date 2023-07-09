@@ -60,7 +60,7 @@ ribs-base-test-rx2 = { module = "com.github.badoo.RIBs:rib-base-test-rx2", versi
 ribs-compose = { module = "com.github.badoo.RIBs:rib-compose", version.ref = "ribs" }
 
 rxjava2 = "io.reactivex.rxjava2:rxjava:2.2.21"
-rxjava3 = "io.reactivex.rxjava3:rxjava:3.1.5"
+rxjava3 = "io.reactivex.rxjava3:rxjava:3.1.6"
 rxandroid2 = "io.reactivex.rxjava2:rxandroid:2.1.1"
 rxandroid3 = "io.reactivex.rxjava3:rxandroid:3.0.2"
 rxrelay2 = "com.jakewharton.rxrelay2:rxrelay:2.1.1"
