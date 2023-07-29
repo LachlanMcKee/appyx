@@ -73,8 +73,25 @@ allprojects {
     }
 }
 
+val buildTask = tasks.register("buildNonMkdocs")
+
 subprojects {
     plugins.apply("release-dependencies-diff-create")
+
+    if (!path.startsWith(":demos:mkdocs:")) {
+        plugins.withId("com.android.app") {
+            buildTask.configure { dependsOn(tasks.named("build")) }
+        }
+        plugins.withId("com.android.library") {
+            buildTask.configure { dependsOn(tasks.named("build")) }
+        }
+        plugins.withId("multiplatform") {
+            buildTask.configure { dependsOn(tasks.named("build")) }
+        }
+        plugins.withId("java-library") {
+            buildTask.configure { dependsOn(tasks.named("build")) }
+        }
+    }
 
     tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions {

@@ -28,11 +28,8 @@ jobs:
       - name: Build
         run: >
           ./gradlew
-          build
-          projectHealth
-          mergeLintSarif
-          mergeDetektSarif
-          :plugins:buildPlugins
+          buildNonMkdocs -x test -x lint -x detekt -x assembleRelease
+          :plugins:buildPlugins -x detekt
           --continue
       - name: Check publication setup
         run: >
@@ -53,11 +50,60 @@ jobs:
           -Psigning.password=${{ secrets.SIGNING_PASSWORD }}
           -Psonatype.username=${{ secrets.SONATYPE_USERNAME }}
           -Psonatype.password=${{ secrets.SONATYPE_PASSWORD }}
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-reports
+          path: |
+            **/build/reports/
+            !**/build/reports/dependency-analysis/
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+      - uses: gradle/wrapper-validation-action@v1
+      - uses: gradle/gradle-build-action@v2
+        with:
+          cache-read-only: ${{ env.MAIN_BRANCH != 'true' }}
+      - name: Lint
+        run: >
+          ./gradlew mergeLintSarif --continue
       - uses: github/codeql-action/upload-sarif@v2
         if: success() || failure()
         with:
           sarif_file: build/lint-merged.sarif
           category: lint
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: lint-reports
+          path: |
+            **/build/reports/
+            !**/build/reports/dependency-analysis/
+
+  code-health:
+    name: Code health
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+      - uses: gradle/wrapper-validation-action@v1
+      - uses: gradle/gradle-build-action@v2
+        with:
+          cache-read-only: ${{ env.MAIN_BRANCH != 'true' }}
+      - name: Detekt & Project Health
+        run: ./gradlew detekt :plugins:detekt mergeDetektSarif projectHealth --continue
       - uses: github/codeql-action/upload-sarif@v2
         if: success() || failure()
         with:
@@ -67,10 +113,9 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: reports
+          name: detekt-merged.sarif
           path: |
-            **/build/reports/
-            !**/build/reports/dependency-analysis/
+            build/detekt-merged.sarif
 
   instrumentation-tests:
     name: Instrumentation tests
@@ -86,46 +131,14 @@ jobs:
       - uses: gradle/gradle-build-action@v2
         with:
           cache-read-only: ${{ env.MAIN_BRANCH != 'true' }}
-      - name: Pre build sources before launching emulator
-        run: ./gradlew compileDebugAndroidTestSources
-      - name: AVD cache
-        uses: actions/cache@v3
-        id: avd-cache
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: avd-29
-      - name: Create AVD and generate snapshot for caching
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          # Use API 29 https://github.com/ReactiveCircus/android-emulator-runner/issues/222
-          api-level: 29
-          arch: x86_64
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
-          script: echo "Generated AVD snapshot for caching."
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
       - name: Instrumentation tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          # Use API 29 https://github.com/ReactiveCircus/android-emulator-runner/issues/222
-          api-level: 29
-          arch: x86_64
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: true
-          script: |
-            adb logcat > logcat.out &
-            ./gradlew connectedCheck
-      - name: Managed device clean-up
+        # Flags from https://github.com/android/nowinandroid/blob/main/.github/workflows/Build.yaml
         run: >
-          ./gradlew cleanManagedDevices --unused-only
-      - name: Screenshot tests
-        # Flags from https://github.com/android/nowinandroid/blob/main/.github/workflows/AndroidCIWithGmd.yaml
-        run: >
-          ./gradlew screenshotTestsCompareBaseline
+          adb logcat > logcat.out &
+          ./gradlew cleanManagedDevices --unused-only &&
+          ./gradlew pixel2api30DebugAndroidTest
           -Dorg.gradle.workers.max=1
           -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect"
           -Pandroid.experimental.testOptions.managedDevices.emulator.showKernelLogging=true
@@ -134,6 +147,38 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: instrumentation-failures
+          path: |
+            **/build/reports
+            logcat.out
+
+  screenshot-tests:
+    name: Screenshot tests
+    runs-on: macOS-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+      - uses: gradle/wrapper-validation-action@v1
+      - uses: gradle/gradle-build-action@v2
+        with:
+          cache-read-only: ${{ env.MAIN_BRANCH != 'true' }}
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+      - name: Screenshot tests
+        # Flags from https://github.com/android/nowinandroid/blob/main/.github/workflows/Build.yaml
+        run: >
+          ./gradlew cleanManagedDevices --unused-only && ./gradlew screenshotTestsCompareBaseline
+          -Dorg.gradle.workers.max=1
+          -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect"
+          -Pandroid.experimental.testOptions.managedDevices.emulator.showKernelLogging=true
+      - name: Upload failed screenshot artifacts
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: screenshot-failures
           path: |
             **/build/reports
             logcat.out
