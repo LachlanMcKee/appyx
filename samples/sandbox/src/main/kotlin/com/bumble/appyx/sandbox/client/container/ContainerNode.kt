@@ -34,6 +34,7 @@ import com.bumble.appyx.sandbox.client.container.ContainerNode.NavTarget
 import com.bumble.appyx.sandbox.client.container.ContainerNode.NavTarget.BlockerExample
 import com.bumble.appyx.sandbox.client.container.ContainerNode.NavTarget.Customisations
 import com.bumble.appyx.sandbox.client.container.ContainerNode.NavTarget.IntegrationPointExample
+import com.bumble.appyx.sandbox.client.container.ContainerNode.NavTarget.Interop2Example
 import com.bumble.appyx.sandbox.client.container.ContainerNode.NavTarget.LazyExamples
 import com.bumble.appyx.sandbox.client.container.ContainerNode.NavTarget.MviCoreExample
 import com.bumble.appyx.sandbox.client.container.ContainerNode.NavTarget.MviCoreLeafExample
@@ -43,6 +44,7 @@ import com.bumble.appyx.sandbox.client.customisations.CustomisationsNode
 import com.bumble.appyx.sandbox.client.explicitnavigation.ExplicitNavigationExampleActivity
 import com.bumble.appyx.sandbox.client.integrationpoint.IntegrationPointExampleNode
 import com.bumble.appyx.sandbox.client.interop.InteropExampleActivity
+import com.bumble.appyx.sandbox.client.interop2.Interop2Node
 import com.bumble.appyx.sandbox.client.list.LazyListContainerNode
 import com.bumble.appyx.sandbox.client.mvicoreexample.MviCoreExampleBuilder
 import com.bumble.appyx.sandbox.client.mvicoreexample.leaf.MviCoreLeafBuilder
@@ -89,6 +91,9 @@ class ContainerNode internal constructor(
 
         @Parcelize
         object MviCoreLeafExample : NavTarget()
+
+        @Parcelize
+        object Interop2Example : NavTarget()
     }
 
     @Suppress("ComplexMethod")
@@ -105,6 +110,7 @@ class ContainerNode internal constructor(
                 buildContext,
                 "MVICore leaf initial state"
             )
+            is Interop2Example -> Interop2Node(buildContext)
         }
 
     @Composable
@@ -147,10 +153,13 @@ class ContainerNode internal constructor(
                 TextButton("Integration point example") {
                     backStack.push(IntegrationPointExample)
                 }
-                TextButton("RIBs interop example") {
+                TextButton("RIBs/Appyx interop example") {
                     integrationPoint.activityStarter.startActivity {
                         Intent(this, InteropExampleActivity::class.java)
                     }
+                }
+                TextButton("Appyx/RIBS interop example") {
+                    backStack.push(Interop2Example)
                 }
                 TextButton("Lazy Examples") { backStack.push(LazyExamples) }
                 TextButton("Blocker") { backStack.push(BlockerExample) }
