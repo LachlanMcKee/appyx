@@ -1,15 +1,28 @@
 package com.bumble.appyx.sandbox.client.interop.parent
 
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.FrameLayout
+import android.content.Context
+import android.graphics.Paint.Align
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.badoo.ribs.core.Node
-import com.badoo.ribs.core.customisation.inflate
-import com.badoo.ribs.core.view.AndroidRibView
 import com.badoo.ribs.core.view.RibView
 import com.badoo.ribs.core.view.ViewFactory
 import com.badoo.ribs.core.view.ViewFactoryBuilder
-import com.bumble.appyx.R
+import com.bumble.appyx.interop.ribs.ComposeRibView
+import com.bumble.appyx.interop.ribs.ComposeView
 import com.bumble.appyx.sandbox.client.interop.parent.RibsParentView.Event
 import com.bumble.appyx.sandbox.client.interop.parent.RibsParentView.Event.SwitchClicked
 import com.jakewharton.rxrelay2.PublishRelay
@@ -25,27 +38,46 @@ interface RibsParentView : RibView, ObservableSource<Event> {
 }
 
 class RibsParentViewImpl private constructor(
+    context: Context,
     private val events: PublishRelay<Event> = PublishRelay.create(),
-    override val androidView: ViewGroup
-) : AndroidRibView(), RibsParentView, ObservableSource<Event> by events {
-
-    private val container = androidView.findViewById<FrameLayout>(R.id.child)
-    private val switch = androidView.findViewById<Button>(R.id.switchButton)
-
-    init {
-        switch.setOnClickListener {
-            events.accept(SwitchClicked)
-        }
-    }
+) : ComposeRibView(context), RibsParentView, ObservableSource<Event> by events {
 
     class Factory : RibsParentView.Factory {
         override fun invoke(deps: Nothing?): ViewFactory<RibsParentView> =
             ViewFactory {
-                val view = it.inflate<ViewGroup>(R.layout.rib_root)
-                RibsParentViewImpl(androidView = view)
+                RibsParentViewImpl(it.parent.context)
             }
     }
 
-    override fun getParentViewForSubtree(subtreeOf: Node<*>): ViewGroup = container
+    private var content: MutableState<ComposeView?> = mutableStateOf(null)
 
+    override val composable: ComposeView = {
+        View(content.value, remember { { events.accept(SwitchClicked) } })
+
+    }
+
+    override fun getParentViewForSubtree(subtreeOf: Node<*>): MutableState<ComposeView?> =
+        content
+}
+
+@Composable
+@SuppressWarnings("MagicNumber")
+private fun View(content: ComposeView?, onButtonClicked: () -> Unit) {
+    Column {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Black)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "Black area belongs to 1.0, container below to 2.0", color = Color.White)
+            Button(onClick = onButtonClicked) {
+                Text("Push V1 or interop node")
+            }
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            content?.invoke()
+        }
+    }
 }

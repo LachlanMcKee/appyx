@@ -6,6 +6,8 @@ import com.badoo.ribs.core.modality.BuildParams
 
 class RibsChildBuilder : SimpleBuilder<Rib>() {
 
-    override fun build(buildParams: BuildParams<Nothing?>): Rib =
-        RibsChildNode(buildParams = buildParams)
+    override fun build(buildParams: BuildParams<Nothing?>): Rib {
+        val interactor = RibsChildInterator(buildParams)
+        return RibsChildNode(buildParams = buildParams, plugins = listOf(interactor))
+    }
 }

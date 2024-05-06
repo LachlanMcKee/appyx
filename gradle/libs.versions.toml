@@ -10,7 +10,7 @@ androidx-navigation-compose = "2.5.1"
 coil = "2.2.1"
 composeBom = "2024.04.00"
 composeCompiler = "1.5.11"
-ribs = "0.40.2-alpha3"
+ribs = "0.39.0"
 mvicore = "1.2.6"
 coroutines = "1.6.4"
 kotlin = "1.9.23"
@@ -53,11 +53,11 @@ kotlin-coroutines-rx2 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-rx2
 mvicore-base = { module = "com.github.badoo.mvicore:mvicore", version.ref = "mvicore" }
 mvicore-android = { module = "com.github.badoo.mvicore:mvicore-android", version.ref = "mvicore" }
 mvicore-binder = { module = "com.github.badoo.mvicore:binder", version.ref = "mvicore" }
-ribs-base = { module = "com.badoo.ribs:rib-base", version.ref = "ribs" }
-ribs-base-test = { module = "com.badoo.ribs:rib-base-test", version.ref = "ribs" }
-ribs-base-test-activity = { module = "com.badoo.ribs:rib-base-test-activity", version.ref = "ribs" }
-ribs-base-test-rx2 = { module = "com.badoo.ribs:rib-base-test-rx2", version.ref = "ribs" }
-ribs-compose = { module = "com.badoo.ribs:rib-compose", version.ref = "ribs" }
+ribs-base = { module = "com.github.badoo.RIBs:rib-base", version.ref = "ribs" }
+ribs-base-test = { module = "com.github.badoo.RIBs:rib-base-test", version.ref = "ribs" }
+ribs-base-test-activity = { module = "com.github.badoo.RIBs:rib-base-test-activity", version.ref = "ribs" }
+ribs-base-test-rx2 = { module = "com.github.badoo.RIBs:rib-base-test-rx2", version.ref = "ribs" }
+ribs-compose = { module = "com.github.badoo.RIBs:rib-compose", version.ref = "ribs" }
 
 rxjava2 = "io.reactivex.rxjava2:rxjava:2.2.21"
 rxjava3 = "io.reactivex.rxjava3:rxjava:3.1.5"
