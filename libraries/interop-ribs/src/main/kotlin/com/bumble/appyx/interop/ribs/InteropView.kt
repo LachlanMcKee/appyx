@@ -3,10 +3,10 @@ package com.bumble.appyx.interop.ribs
 import android.content.Context
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.lifecycle.Lifecycle
-import com.badoo.ribs.compose.ComposeRibView
 import com.badoo.ribs.compose.ComposeView
 import com.badoo.ribs.core.view.RibView
 import com.badoo.ribs.core.view.ViewFactory
@@ -24,17 +24,19 @@ interface InteropView : RibView {
 
 internal class InteropViewImpl private constructor(
     override val context: Context,
-    lifecycle: Lifecycle,
     private val appyxNode: Node,
     private val onBackPressedDispatcherOwner: OnBackPressedDispatcherOwner,
-) : InteropView, ComposeRibView(context, lifecycle) {
+) : InteropView, ComposeRibView(context) {
 
     override val composable: ComposeView
         get() = @Composable {
             CompositionLocalProvider(
                 LocalOnBackPressedDispatcherOwner provides onBackPressedDispatcherOwner,
             ) {
-                appyxNode.Compose()
+                Column {
+                    Text("RIBs interop wrapping Appyx")
+                    appyxNode.Compose()
+                }
             }
         }
 
@@ -43,7 +45,6 @@ internal class InteropViewImpl private constructor(
             ViewFactory {
                 InteropViewImpl(
                     context = it.parent.context,
-                    lifecycle = it.lifecycle,
                     appyxNode = deps.appyxNode,
                     onBackPressedDispatcherOwner = deps.onBackPressedDispatcherOwner,
                 )

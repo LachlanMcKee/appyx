@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.java8)
     implementation(libs.androidx.activity.compose)
     implementation(libs.compose.ui.ui)
+    implementation(libs.compose.material)
 
     androidTestImplementation(composeBom)
     androidTestImplementation(libs.androidx.activity.compose)

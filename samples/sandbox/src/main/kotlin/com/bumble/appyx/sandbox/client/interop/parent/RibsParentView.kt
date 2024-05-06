@@ -1,9 +1,7 @@
 package com.bumble.appyx.sandbox.client.interop.parent
 
 import android.content.Context
-import android.graphics.Paint.Align
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -33,7 +31,7 @@ interface RibsParentView : RibView, ObservableSource<Event> {
     interface Factory : ViewFactoryBuilder<Nothing?, RibsParentView>
 
     sealed class Event {
-        object SwitchClicked : Event()
+        data object SwitchClicked : Event()
     }
 }
 
@@ -53,7 +51,6 @@ class RibsParentViewImpl private constructor(
 
     override val composable: ComposeView = {
         View(content.value, remember { { events.accept(SwitchClicked) } })
-
     }
 
     override fun getParentViewForSubtree(subtreeOf: Node<*>): MutableState<ComposeView?> =

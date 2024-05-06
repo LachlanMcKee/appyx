@@ -48,11 +48,6 @@
             android:name="com.bumble.appyx.sandbox.client.customisations.ViewCustomisationsActivity"
             android:exported="false"
             android:theme="@style/Theme.Appyx.NoActionBar" />
-
-        <activity
-            android:name="com.bumble.appyx.sandbox.client.interop.InteropExampleActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Appyx.NoActionBar" />
     </application>
 
 </manifest>

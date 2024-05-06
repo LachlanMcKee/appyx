@@ -3,6 +3,8 @@ package com.bumble.appyx.interop.ribs
 import android.content.Context
 import android.os.Bundle
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -37,10 +39,10 @@ class InteropAppyxNode<P, T : Rib>(
                 savedInstanceState = buildContext.savedStateMap?.let { savedStateMap ->
                     bundleOf(*savedStateMap.toList().toTypedArray())
                 },
-                customisations = buildContext.customisations,
-                defaultPlugins = { listOf(this) }
+                customisations = buildContext.customisations
             ),
             payload = params,
+            extraPlugins = listOf(this)
         )
 
     private var viewComposable by mutableStateOf<ComposeView?>(null)
@@ -105,7 +107,10 @@ class InteropAppyxNode<P, T : Rib>(
                 rib.node.onDestroy(isRecreating = false) // TODO
             }
         }
-        viewComposable?.invoke()
+        Column {
+            Text("Appyx interop wrapping RIBs")
+            viewComposable?.invoke()
+        }
     }
 
 }
